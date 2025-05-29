@@ -3,5 +3,6 @@
     <style name="Theme.EnLearn" parent="android:Theme.Material.Light.NoActionBar">
         <item name="windowSplashScreenBackground">@color/primaryThemeColor</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/favicon</item>
+        <item name="postSplashScreenTheme">@style/Theme.EnLearn</item>
     </style>
 </resources>
