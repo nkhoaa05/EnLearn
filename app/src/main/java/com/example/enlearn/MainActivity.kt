@@ -1,5 +1,4 @@
 package com.example.enlearn
-import com.example.enlearn.SplashScreenContent
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,14 +11,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.enlearn.ui.theme.EnLearnTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            SplashScreenContent()
+            EnLearnTheme {
+                androidx.compose.material3.Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.background
+                ) {
+                    AppNavGraph()
+                }
+            }
         }
     }
 }

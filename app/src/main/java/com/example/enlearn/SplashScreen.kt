@@ -3,21 +3,32 @@ package com.example.enlearn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.enlearn.ui.theme.EnLearnTheme
+import androidx.navigation.NavController
+import kotlinx.coroutines.delay
 
+
+//@Preview(showBackground = true)
 @Composable
-fun SplashScreenContent() {
+fun SplashScreen(navController: NavController) {
+
+    LaunchedEffect(true) {
+        delay(2000)
+        navController.navigate("onboarding1") {
+            popUpTo("splash") {inclusive = true}
+        }
+    }
+
+
     val topColor = Color(0xFF410FA3)
     val bottomColor = Color(0xFF18063D)
 
@@ -51,10 +62,3 @@ fun SplashScreenContent() {
     }
 }
 
-@Composable
-@Preview(showSystemUi = true)
-fun SplashScreenPreview() {
-    EnLearnTheme {
-        SplashScreenContent()
-    }
-}
