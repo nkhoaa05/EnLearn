@@ -1,5 +1,3 @@
 <resources>
     <string name="app_name">EnLearn</string>
-    <string name="title_activity_splash_screen">SplashScreen</string>
-    <string name="title_activity_on_boarding1">OnBoarding1</string>
 </resources>

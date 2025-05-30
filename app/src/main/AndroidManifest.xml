@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/favicon"
         android:supportsRtl="true"
-        android:theme="@style/Theme.EnLearn"
+        android:theme="@style/Theme.EnLearn.Splash"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"

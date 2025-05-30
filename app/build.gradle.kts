@@ -41,6 +41,10 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
     val nav_version = "2.9.0"
     implementation(libs.androidx.navigation.compose)
     implementation("androidx.core:core-splashscreen:1.0.0")
