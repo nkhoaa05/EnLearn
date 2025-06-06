@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "874049449773",
+    "project_id": "enlearn-de718",
+    "storage_bucket": "enlearn-de718.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:874049449773:android:491e910038f4429a92ada4",
+        "android_client_info": {
+          "package_name": "com.example.enlearn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHzNTpCnJeQtgS9Z1UptucVjP0D2AYa6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

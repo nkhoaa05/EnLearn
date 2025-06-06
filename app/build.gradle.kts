@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -41,11 +42,12 @@ android {
 
 dependencies {
 
+    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
+    implementation("com.google.firebase:firebase-analytics")
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    val nav_version = "2.9.0"
     implementation(libs.androidx.navigation.compose)
     implementation("androidx.core:core-splashscreen:1.0.0")
     implementation(libs.androidx.core.ktx)

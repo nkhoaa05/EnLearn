@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.enlearn.presentation.components.ClickableLoginText
 import com.example.enlearn.presentation.components.PageIndicator
 import com.example.enlearn.ui.theme.EnLearnTheme
@@ -22,7 +23,8 @@ import com.example.enlearn.ui.theme.EnLearnTheme
 @Composable
 fun OnboardingScreen3(
     onChooseLanguageClicked: () -> Unit,
-    onLoginClicked: () -> Unit
+    onLoginClicked: () -> Unit,
+    navController: NavController
 ) {
     val primaryButtonColor = Color(0xFF6A77EE)
     val activeIndicatorColor = Color(0xFFFFA500)
@@ -116,13 +118,3 @@ fun OnboardingScreen3(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun OnboardingScreen3Preview() {
-    EnLearnTheme {
-        OnboardingScreen3(
-            onChooseLanguageClicked = { },
-            onLoginClicked = { }
-        )
-    }
-}

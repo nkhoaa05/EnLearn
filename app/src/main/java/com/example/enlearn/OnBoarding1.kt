@@ -32,7 +32,7 @@ val onboardingImageResource = R.drawable.logo
 fun OnboardingScreen1(navController: NavController) {
 
     val onNextClicked = {
-        navController.navigate("home")
+        navController.navigate("onboarding2")
     }
 
     val onLoginClicked = {
