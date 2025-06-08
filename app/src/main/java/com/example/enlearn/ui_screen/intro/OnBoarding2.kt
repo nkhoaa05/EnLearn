@@ -1,4 +1,4 @@
-package com.example.enlearn
+package com.example.enlearn.ui_screen.intro
 
 
 import androidx.compose.foundation.Image
@@ -12,13 +12,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.enlearn.R
 import com.example.enlearn.presentation.components.ClickableLoginText
 import com.example.enlearn.presentation.components.PageIndicator
-import com.example.enlearn.ui.theme.EnLearnTheme
 
 @Composable
 fun OnboardingScreen2(

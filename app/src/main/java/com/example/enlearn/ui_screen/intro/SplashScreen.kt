@@ -1,4 +1,4 @@
-package com.example.enlearn
+package com.example.enlearn.ui_screen.intro
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.enlearn.R
 import kotlinx.coroutines.delay
 
 
