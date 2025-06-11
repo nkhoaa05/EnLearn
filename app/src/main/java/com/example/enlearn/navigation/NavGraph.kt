@@ -14,9 +14,9 @@ import com.example.enlearn.ui_screen.intro.SplashScreen
 @Composable
 fun AppNavGraph() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "splash") {
+    NavHost(navController = navController, startDestination = "onboarding1") {
         // Splash
-        composable("splash") { SplashScreen(navController) }
+//        composable("splash") { SplashScreen(navController) }
         // On boarding
         composable("onboarding1") { OnboardingScreen1(navController) }
         composable("onboarding2") {

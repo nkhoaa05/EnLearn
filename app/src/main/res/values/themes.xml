@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Theme chính của app -->
+
     <style name="Theme.EnLearn" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowBackground">@drawable/themes_color</item>
-<!--        <item name="android:windowBackground">@color/primaryThemeColor</item>-->
+        <item name="android:windowBackground">@android:color/white</item>
     </style>
 
     <style name="Theme.EnLearn.Splash" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowBackground">@drawable/themes_color</item>
     </style>
+
+
 </resources>
 
