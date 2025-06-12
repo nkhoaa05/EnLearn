@@ -1,4 +1,4 @@
-package com.example.yourappname // Thay bằng package của bạn
+package com.example.enlearn.ui_screen.intro
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,56 +19,60 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.enlearn.R
 
 
-
 val onboardingImageResource = R.drawable.logo
-
+//@Preview(showBackground = true)
 @Composable
-fun OnboardingScreen1(
-    onNextClicked: () -> Unit,
-    onLoginClicked: () -> Unit
-) {
+fun OnboardingScreen1(navController: NavController) {
+
+    val onNextClicked = {
+        navController.navigate("onboarding2")
+    }
+
+    val onLoginClicked = {
+        navController.navigate("home")
+    }
+
     val primaryButtonColor = Color(0xFF6A77EE)
-    val activeIndicatorColor = Color(0xFFFFA500) // Màu cam cho chấm active (từ Figma)
-    val inactiveIndicatorColor = Color(0xFFE0E0E0) // Màu xám nhạt hơn cho chấm inactive (điều chỉnh từ D3D3D3)
+    val activeIndicatorColor = Color(0xFFFFA500)
+    val inactiveIndicatorColor = Color(0xFFE0E0E0)
     val linkTextColor = primaryButtonColor
-    val titleTextColor = Color(0xFF1D1D1F) // Màu đen/xám đậm cho tiêu đề (giống iOS)
-    val subtitleTextColor = Color(0xFF8A8A8F) // Màu xám cho phụ đề (giống iOS)
+    val titleTextColor = Color(0xFF1D1D1F)
+    val subtitleTextColor = Color(0xFF8A8A8F)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.White // Nền trắng tinh như Figma
+        color = Color.White
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp) // Chỉ padding ngang, vertical sẽ dùng Spacer
+                .padding(horizontal = 24.dp)
                 .padding(bottom = 80.dp)
                 .padding(top = 115.dp), // Padding dưới cùng cho Column
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Spacer lớn ở trên cùng để đẩy hình ảnh xuống
-            Spacer(modifier = Modifier.height(80.dp)) // Điều chỉnh để khớp với Figma
+            Spacer(modifier = Modifier.height(80.dp))
 
             // 1. Hình ảnh
             Image(
-                painter = painterResource(id = onboardingImageResource), // << THAY THẾ ID RESOURCE Ở ĐÂY
+                painter = painterResource(id = onboardingImageResource),
                 contentDescription = "Onboarding Illustration",
                 modifier = Modifier
-                    .fillMaxWidth(0.85f) // Chiếm 85% chiều rộng, để có khoảng trống hai bên
-                    .aspectRatio(1.15f) // Tỷ lệ W/H ~295/255 từ Figma (điều chỉnh nếu cần)
-                // .padding(top = 112.5.dp), // Bỏ padding top ở đây, dùng Spacer ở trên Column
+                    .fillMaxWidth(0.85f)
+                    .aspectRatio(1.15f)
+                // .padding(top = 112.5.dp),
                 ,
                 contentScale = ContentScale.Fit
             )
 
-            Spacer(modifier = Modifier.height(40.dp)) // Khoảng cách từ ảnh đến indicators
+            Spacer(modifier = Modifier.height(40.dp))
 
             // 2. Chỉ báo trang (Page Indicators)
             PageIndicator(
@@ -76,11 +80,11 @@ fun OnboardingScreen1(
                 currentPage = 0,
                 activeColor = activeIndicatorColor,
                 inactiveColor = inactiveIndicatorColor,
-                activeIndicatorSize = 10.dp, // Kích thước lớn hơn cho active
-                inactiveIndicatorSize = 6.dp // Kích thước nhỏ hơn cho inactive
+                activeIndicatorSize = 10.dp,
+                inactiveIndicatorSize = 6.dp
             )
 
-            Spacer(modifier = Modifier.height(40.dp)) // Khoảng cách từ indicators đến tiêu đề
+            Spacer(modifier = Modifier.height(40.dp))
 
             // 3. Tiêu đề chính
             Text(
@@ -88,7 +92,7 @@ fun OnboardingScreen1(
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
-                    fontSize = 24.sp // Đảm bảo kích thước
+                    fontSize = 24.sp
                 ),
                 color = titleTextColor
             )
@@ -98,18 +102,18 @@ fun OnboardingScreen1(
             // 4. Tiêu đề phụ
             Text(
                 text = "With conversation-based learning, you'll be talking from lesson one",
-                style = MaterialTheme.typography.bodyLarge.copy( // bodyLarge (16sp) thay vì bodyMedium (14sp)
-                    textAlign = TextAlign.Justify,
-                    fontSize = 16.sp, // Cụ thể hóa kích thước
-                    lineHeight = 24.sp // Tăng lineHeight cho dễ đọc
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp
                 ),
                 color = subtitleTextColor
             )
 
-            // Spacer để đẩy các nút xuống dưới
+
             Spacer(modifier = Modifier.weight(1f))
 
-            // 5. Nút "Next"
+
             Button(
                 onClick = onNextClicked,
                 modifier = Modifier
@@ -121,15 +125,15 @@ fun OnboardingScreen1(
                     contentColor = Color.White
                 )
             ) {
-                Text("Next", fontSize = 18.sp, fontWeight = FontWeight.SemiBold) // Font to hơn, đậm vừa
+                Text("Next", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 6. Văn bản "Already an account? Log in"
+
             ClickableLoginText(
                 onLoginClicked = onLoginClicked,
-                defaultTextColor = subtitleTextColor, // Dùng màu xám của phụ đề
+                defaultTextColor = subtitleTextColor,
                 linkColor = linkTextColor
             )
         }
@@ -143,8 +147,8 @@ fun PageIndicator(
     modifier: Modifier = Modifier,
     activeColor: Color = MaterialTheme.colorScheme.primary,
     inactiveColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-    activeIndicatorSize: Dp = 8.dp, // Kích thước cho chấm active
-    inactiveIndicatorSize: Dp = 8.dp, // Kích thước cho chấm inactive
+    activeIndicatorSize: Dp = 8.dp,
+    inactiveIndicatorSize: Dp = 8.dp,
     spacing: Dp = 8.dp
 ) {
     Row(
@@ -156,7 +160,7 @@ fun PageIndicator(
             val isCurrentPage = index == currentPage
             Box(
                 modifier = Modifier
-                    .size(if (isCurrentPage) activeIndicatorSize else inactiveIndicatorSize) // Kích thước động
+                    .size(if (isCurrentPage) activeIndicatorSize else inactiveIndicatorSize)
                     .clip(CircleShape)
                     .background(if (isCurrentPage) activeColor else inactiveColor)
             )
@@ -167,11 +171,11 @@ fun PageIndicator(
 @Composable
 fun ClickableLoginText(
     onLoginClicked: () -> Unit,
-    defaultTextColor: Color = MaterialTheme.colorScheme.onSurfaceVariant, // Màu mặc định cho phần text thường
+    defaultTextColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     linkColor: Color = MaterialTheme.colorScheme.primary
 ) {
     val annotatedString = buildAnnotatedString {
-        withStyle(style = SpanStyle(color = defaultTextColor, fontSize = 14.sp)) { // Áp dụng màu và size cho phần text thường
+        withStyle(style = SpanStyle(color = defaultTextColor, fontSize = 14.sp)) {
             append("Already an account? ")
         }
         pushStringAnnotation(tag = "LOGIN", annotation = "login")
@@ -183,7 +187,7 @@ fun ClickableLoginText(
 
     ClickableText(
         text = annotatedString,
-        style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center), // Style cơ bản, size sẽ được override bởi SpanStyle
+        style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center),
         onClick = { offset ->
             annotatedString.getStringAnnotations(tag = "LOGIN", start = offset, end = offset)
                 .firstOrNull()?.let {
@@ -194,17 +198,3 @@ fun ClickableLoginText(
     )
 }
 
-
-// Giả sử bạn có một Theme tên là EnLearnTheme
-// Nếu không, bạn có thể thay thế bằng MaterialTheme {}
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun OnboardingScreen1Preview() {
-    // Thay EnLearnTheme bằng theme của bạn nếu có
-    MaterialTheme { // Hoặc EnLearnTheme {
-        OnboardingScreen1(
-            onNextClicked = { println("Next clicked") },
-            onLoginClicked = { println("Login clicked") }
-        )
-    }
-}
