@@ -1,4 +1,4 @@
-package com.example.enlearn.ui_screen.home
+package com.example.enlearn.ui.screen.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,9 +21,10 @@ import com.example.enlearn.ui.theme.EnLearnTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.PieChart
+//import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.AccessTime
+//import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.runtime.*
 import androidx.compose.runtime.mutableStateOf
@@ -174,7 +175,7 @@ fun FeaturedCourseCard(
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Filled.AccessTime,
+                    imageVector = Icons.Filled.Face,//sua lai
                     contentDescription = "Notifications"
                 )
                 Spacer(modifier = Modifier.width(4.dp))
@@ -191,7 +192,7 @@ fun BottomNavigationBar(selectedItem: Int, onItemSelected: (Int) -> Unit) {
     val icons = listOf(
         Icons.Filled.Home,
         Icons.Filled.List,
-        Icons.Filled.PieChart,
+        Icons.Filled.Person,//sua lai
         Icons.Filled.Person
     )
 

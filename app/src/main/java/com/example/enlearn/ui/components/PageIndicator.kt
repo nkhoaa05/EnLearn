@@ -1,4 +1,4 @@
-package com.example.enlearn.presentation.components
+package com.example.enlearn.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

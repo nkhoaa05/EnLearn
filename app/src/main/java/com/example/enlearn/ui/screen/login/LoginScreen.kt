@@ -1,4 +1,4 @@
-package com.example.enlearn.ui_screen.login
+package com.example.enlearn.ui.screen.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
