@@ -1,4 +1,4 @@
-package com.example.enlearn.ui_screen.intro
+package com.example.enlearn.ui.screen.intro
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

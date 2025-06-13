@@ -1,4 +1,4 @@
-package com.example.enlearn.presentation.components
+package com.example.enlearn.ui.components
 
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme

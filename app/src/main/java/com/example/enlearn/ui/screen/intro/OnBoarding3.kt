@@ -1,8 +1,8 @@
-package com.example.enlearn.ui_screen.intro
-
+package com.example.enlearn.ui.screen.intro
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,12 +16,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.enlearn.R
-import com.example.enlearn.presentation.components.ClickableLoginText
-import com.example.enlearn.presentation.components.PageIndicator
+import com.example.enlearn.ui.components.ClickableLoginText
+import com.example.enlearn.ui.components.PageIndicator
 
 @Composable
-fun OnboardingScreen2(
-    onNextClicked: () -> Unit,
+fun OnboardingScreen3(
+    onChooseLanguageClicked: () -> Unit,
     onLoginClicked: () -> Unit,
     navController: NavController
 ) {
@@ -47,8 +47,8 @@ fun OnboardingScreen2(
             Spacer(modifier = Modifier.height(80.dp))
 
             Image(
-                painter = painterResource(id = R.drawable.onboarding2),
-                contentDescription = "Learning Illustration",
+                painter = painterResource(id = R.drawable.onboarding3),
+                contentDescription = "Language Learning Illustration",
                 modifier = Modifier
                     .fillMaxWidth(0.85f)
                     .aspectRatio(1.15f),
@@ -59,7 +59,7 @@ fun OnboardingScreen2(
 
             PageIndicator(
                 numberOfPages = 3,
-                currentPage = 1,
+                currentPage = 2,
                 activeColor = activeIndicatorColor,
                 inactiveColor = inactiveIndicatorColor,
                 activeIndicatorSize = 10.dp,
@@ -69,7 +69,7 @@ fun OnboardingScreen2(
             Spacer(modifier = Modifier.height(40.dp))
 
             Text(
-                text = "Take your time to learn",
+                text = "The lessons you need to learn",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -81,7 +81,7 @@ fun OnboardingScreen2(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Develop a habit of learning and make it a part of your daily routine",
+                text = "Using a variety of learning styles to learn and retain",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     textAlign = TextAlign.Center,
                     fontSize = 16.sp,
@@ -93,16 +93,17 @@ fun OnboardingScreen2(
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = onNextClicked,
+                onClick = onChooseLanguageClicked,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = primaryButtonColor,
                     contentColor = Color.White
                 )
             ) {
-                Text("Next", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                Text("Choose a language", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
