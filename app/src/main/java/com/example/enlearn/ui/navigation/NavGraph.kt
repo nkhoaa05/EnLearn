@@ -10,6 +10,7 @@ import com.example.enlearn.ui.screen.home.HomeScreen
 import com.example.enlearn.ui.screen.intro.OnboardingScreen1
 import com.example.enlearn.ui.screen.intro.OnboardingScreen2
 import com.example.enlearn.ui.screen.intro.OnboardingScreen3
+import com.example.enlearn.ui.screen.login.LoginScreen
 
 
 @Composable
@@ -46,12 +47,10 @@ fun AppNavGraph() {
             MultipleChoiceScreen(
                 onNavigateToCompleted = {
                     navController.navigate("completed") {
-                        // Xóa màn hình bài học khỏi stack để không quay lại được
                         popUpTo("lesson") { inclusive = true }
                     }
                 },
                 onBack = {
-                    // Xử lý khi nhấn nút back, ví dụ: quay lại màn hình chính
                     // navController.popBackStack()
                 }
             )
@@ -64,6 +63,8 @@ fun AppNavGraph() {
                 }
             )
         }
+        // Login
+        composable("login") { LoginScreen()}
         // Main
         composable("home") { HomeScreen() }
     }

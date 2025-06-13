@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.EnLearn" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.EnLearn" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/white</item>
     </style>
 
-    <style name="Theme.EnLearn.Splash" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.EnLearn.Splash" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/themes_color</item>
     </style>
 
 
 </resources>
-

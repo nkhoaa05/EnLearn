@@ -103,7 +103,7 @@ fun OnboardingScreen3(
                     contentColor = Color.White
                 )
             ) {
-                Text("Choose a language", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                Text("Get started", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
