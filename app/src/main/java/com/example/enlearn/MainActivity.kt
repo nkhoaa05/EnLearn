@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import com.example.enlearn.navigation.AppNavGraph
 import com.example.enlearn.ui.theme.EnLearnTheme
 import com.example.enlearn.ui_screen.login.LoginScreen
 
@@ -17,7 +18,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = androidx.compose.material3.MaterialTheme.colorScheme.background
                 ) {
-                    LoginScreen()
+                    AppNavGraph()
                 }
             }
         }
