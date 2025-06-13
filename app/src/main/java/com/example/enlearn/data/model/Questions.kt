@@ -1,9 +1,7 @@
 package com.example.enlearn.data.model
 
-data class Questions(
-    val id: String = "",
-    val lessonId: String = "",
-    val questionText: String = "",
-    val options: List<String> = listOf(),
+data class Question(
+    val question: String = "",
+    val options: List<String> = emptyList(),
     val correctAnswerIndex: Int = 0
 )

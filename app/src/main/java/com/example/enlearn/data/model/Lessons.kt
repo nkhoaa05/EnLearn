@@ -1,7 +1,7 @@
 package com.example.enlearn.data.model
 
-data class Lessons(
+data class Lesson(
     val id: String = "",
-    val chapterId: String = "",
-    val name: String = ""
+    val title: String = "",
+    val questions: List<Question> = emptyList()
 )
