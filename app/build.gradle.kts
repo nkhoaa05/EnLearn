@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.example.enlearn"
-    compileSdk = 34 // Khuyến nghị dùng 34 (bản ổn định) thay vì 35 (preview)
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.enlearn"
         minSdk = 24
-        targetSdk = 34 // Nên đồng bộ với compileSdk
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -30,7 +30,6 @@ android {
         }
     }
     compileOptions {
-        // Java 17 là tiêu chuẩn mới cho các dự án Android gần đây
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -40,9 +39,9 @@ android {
     buildFeatures {
         compose = true
     }
-    // THÊM KHỐI NÀY: Chỉ định phiên bản compiler cho Compose
+
     composeOptions {
-        kotlinCompilerExtensionVersion = "2.0.0" // Thay bằng version bạn dùng, ví dụ libs.versions.kotlin.compose.compiler.get()
+        kotlinCompilerExtensionVersion = "2.0.0"
     }
 }
 
@@ -54,8 +53,10 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.0")
 
     // --- Firebase ---
-    implementation(platform("com.google.firebase:firebase-bom:33.1.0")) // Cập nhật phiên bản mới nhất
+    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation ("com.google.firebase:firebase-auth:23.2.1")
+    implementation ("com.google.android.gms:play-services-auth:21.3.0")
 
     // --- Jetpack Compose ---
     // BOM (Bill of Materials) để quản lý phiên bản các thư viện Compose
@@ -63,18 +64,11 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3) // ĐÚNG: Thư viện Material Design cho Compose
+    implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
-    // SỬA LẠI: Dùng thư viện foundation chính, không phải foundation-android
-    // Bạn cần đảm bảo trong libs.versions.toml có dòng:
-    // androidx-foundation = { group = "androidx.compose.foundation", name = "foundation" }
     implementation(libs.androidx.foundation)
+    implementation(libs.androidx.runtime.livedata)
 
-    // XÓA BỎ: Các thư viện cho hệ thống View cũ
-    // implementation(libs.androidx.appcompat)
-    // implementation(libs.material)
-    // implementation(libs.androidx.activity)
-    // implementation(libs.androidx.constraintlayout)
 
     // --- Testing ---
     testImplementation(libs.junit)

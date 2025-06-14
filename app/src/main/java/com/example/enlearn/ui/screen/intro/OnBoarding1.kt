@@ -2,12 +2,26 @@ package com.example.enlearn.ui.screen.intro
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,17 +41,14 @@ import com.example.enlearn.R
 
 
 val onboardingImageResource = R.drawable.logo
+
 //@Preview(showBackground = true)
 @Composable
-fun OnboardingScreen1(navController: NavController) {
-
-    val onNextClicked = {
-        navController.navigate("onboarding2")
-    }
-
-    val onLoginClicked = {
-        navController.navigate("home")
-    }
+fun OnboardingScreen1(
+    onNextClicked: () -> Unit,
+    onLoginClicked: () -> Unit,
+    navController: NavController
+) {
 
     val primaryButtonColor = Color(0xFF6A77EE)
     val activeIndicatorColor = Color(0xFFFFA500)
@@ -179,7 +190,13 @@ fun ClickableLoginText(
             append("Already an account? ")
         }
         pushStringAnnotation(tag = "LOGIN", annotation = "login")
-        withStyle(style = SpanStyle(color = linkColor, fontWeight = FontWeight.Bold, fontSize = 14.sp)) {
+        withStyle(
+            style = SpanStyle(
+                color = linkColor,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
+            )
+        ) {
             append("Log in")
         }
         pop()

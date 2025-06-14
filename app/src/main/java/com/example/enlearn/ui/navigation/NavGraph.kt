@@ -17,9 +17,18 @@ import com.example.enlearn.ui.screen.login.LoginScreen
 fun AppNavGraph() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "onboarding1") {
-        // Splash
         // On boarding
-        composable("onboarding1") { OnboardingScreen1(navController) }
+        composable("onboarding1") {
+            OnboardingScreen1(
+                onNextClicked = {
+                    navController.navigate("onboarding2")
+                },
+                onLoginClicked = {
+                    navController.navigate("login")
+                },
+                navController
+            )
+        }
         composable("onboarding2") {
             OnboardingScreen2(
                 onNextClicked = {
@@ -66,12 +75,15 @@ fun AppNavGraph() {
         composable("login") {
             LoginScreen(
                 onLoginSuccess = {
-                    navController.navigate("home") {
-                    popUpTo("login") { inclusive = true }
-                }
-                }
-            )}
-        composable("signup"){}
+                    navController.navigate("home")
+                    {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
+                navController
+            )
+        }
+        composable("signup") {}
         // Main
         composable("home") { HomeScreen() }
     }
