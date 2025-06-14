@@ -18,7 +18,6 @@ fun AppNavGraph() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "onboarding1") {
         // Splash
-//        composable("splash") { SplashScreen(navController) }
         // On boarding
         composable("onboarding1") { OnboardingScreen1(navController) }
         composable("onboarding2") {
@@ -34,10 +33,10 @@ fun AppNavGraph() {
         }
         composable("onboarding3") {
             OnboardingScreen3(
-                onChooseLanguageClicked = {
-                    navController.navigate("home")
+                onNextClicked = {
+                    navController.navigate("login")
                 },
-                onLoginClicked = { navController.navigate("home") },
+                onLoginClicked = { navController.navigate("login") },
                 navController
             )
         }
@@ -64,7 +63,15 @@ fun AppNavGraph() {
             )
         }
         // Login
-        composable("login") { LoginScreen()}
+        composable("login") {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate("home") {
+                    popUpTo("login") { inclusive = true }
+                }
+                }
+            )}
+        composable("signup"){}
         // Main
         composable("home") { HomeScreen() }
     }

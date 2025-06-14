@@ -21,7 +21,7 @@ import com.example.enlearn.ui.components.PageIndicator
 
 @Composable
 fun OnboardingScreen3(
-    onChooseLanguageClicked: () -> Unit,
+    onNextClicked: () -> Unit,
     onLoginClicked: () -> Unit,
     navController: NavController
 ) {
@@ -93,7 +93,7 @@ fun OnboardingScreen3(
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = onChooseLanguageClicked,
+                onClick = onNextClicked,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),

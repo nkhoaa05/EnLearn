@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,18 +35,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.enlearn.R
-
 import com.example.enlearn.ui.components.AppButton
 
-@Preview(showBackground = true)
+
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    onLoginSuccess: () -> Unit
+//    onResgister: () -> Unit
+) {
+    val viewModel: LoginViewModel = viewModel()
+    val user by viewModel.user.observeAsState()
+    val error by viewModel.error.observeAsState()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    if (user != null) {
+        onLoginSuccess()
+        return
+    }
 
     val PrimaryColor = Color(0xFF410FA3)
     Column(
@@ -114,7 +125,9 @@ fun LoginScreen() {
                 )
             }
             AppButton(
-                onClick = {}, "Đăng nhập",
+                onClick = {
+                    viewModel.login(email, password)
+                }, "Đăng nhập",
                 modifier = Modifier
                     .width(200.dp)
                     .height(50.dp)
