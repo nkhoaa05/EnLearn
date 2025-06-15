@@ -1,12 +1,17 @@
-package com.example.enlearn.ui.screen.home
+package com.example.enlearn.presentation.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,25 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.enlearn.R
 import com.example.enlearn.ui.theme.EnLearnTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-//import androidx.compose.material.icons.filled.PieChart
-import androidx.compose.material.icons.filled.Person
-//import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.runtime.*
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-
-
-
 
 @Composable
 fun HomeScreen() {
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
-
+        // Header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -73,7 +64,7 @@ fun HomeScreen() {
                 }
                 Icon(
                     imageVector = Icons.Filled.Notifications,
-                    contentDescription = "Time",
+                    contentDescription = "Notifications",
                     tint = Color(0xFF00C4CC)
                 )
             }
@@ -81,12 +72,14 @@ fun HomeScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Continue Course
         SectionHeader(title = "Continue Course")
         Spacer(modifier = Modifier.height(8.dp))
         CourseCard(title = "Beginner's Language Mastery", subtitle = "20 Classes • Easy", progress = "0/20")
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Featured Courses
         SectionHeader(title = "Featured Courses")
         Spacer(modifier = Modifier.height(8.dp))
         Row(
@@ -100,6 +93,20 @@ fun HomeScreen() {
         }
 
         Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+@Composable
+fun LessonScreen() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Lesson Screen", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+fun ProfileScreen() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Profile Screen", fontSize = 20.sp, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -151,13 +158,8 @@ fun CourseCard(title: String, subtitle: String, progress: String) {
     }
 }
 
-
 @Composable
-fun FeaturedCourseCard(
-    title: String,
-    subtitle: String,
-    modifier: Modifier = Modifier
-) {
+fun FeaturedCourseCard(title: String, subtitle: String, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .height(120.dp)
@@ -175,8 +177,8 @@ fun FeaturedCourseCard(
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Filled.Face,//sua lai
-                    contentDescription = "Notifications"
+                    imageVector = Icons.Filled.Notifications,
+                    contentDescription = "Time"
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(text = "2 hours", fontSize = 12.sp, color = Color.Gray)
@@ -185,17 +187,10 @@ fun FeaturedCourseCard(
     }
 }
 
-
 @Composable
 fun BottomNavigationBar(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    val items = listOf("Home", "Task", "Stats", "Profile")
-    val icons = listOf(
-        Icons.Filled.Home,
-        Icons.Filled.List,
-        Icons.Filled.Person,//sua lai
-        Icons.Filled.Person
-    )
-
+    val items = listOf("Home", "Lesson", "Profile")
+    val icons = listOf(Icons.Filled.Home, Icons.Filled.MenuBook, Icons.Filled.Person)
 
     NavigationBar(containerColor = Color.White) {
         items.forEachIndexed { index, item ->
@@ -223,7 +218,6 @@ fun BottomNavigationBar(selectedItem: Int, onItemSelected: (Int) -> Unit) {
     }
 }
 
-
 @Composable
 fun MainScreen() {
     var selectedItem by remember { mutableStateOf(0) }
@@ -238,6 +232,8 @@ fun MainScreen() {
         Box(modifier = Modifier.padding(padding)) {
             when (selectedItem) {
                 0 -> HomeScreen()
+                1 -> LessonScreen()
+                2 -> ProfileScreen()
             }
         }
     }
@@ -250,4 +246,3 @@ fun MainPreview() {
         MainScreen()
     }
 }
-
