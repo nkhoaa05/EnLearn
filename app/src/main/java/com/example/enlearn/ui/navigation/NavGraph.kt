@@ -84,7 +84,17 @@ fun AppNavGraph() {
                 navController
             )
         }
-        composable("signup") { SignUpScreen() }
+        composable("signup") {
+            SignUpScreen(
+                onSignUpSuccess = {
+                    navController.navigate("login") {
+                        popUpTo("signup") { inclusive = true }
+                    }
+                },
+                navController
+            )
+        }
+
         // Main
         composable("home") { HomeScreen() }
     }
