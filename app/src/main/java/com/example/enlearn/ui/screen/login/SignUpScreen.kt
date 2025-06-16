@@ -125,6 +125,7 @@ fun SignUpScreen(
                 placeholder = "Nhập mật khẩu",
                 isPassword = true
             )
+            if (firstname.isNotEmpty() && lastname.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) msg = " "
 
             Spacer(modifier = Modifier.height(10.dp))
 
