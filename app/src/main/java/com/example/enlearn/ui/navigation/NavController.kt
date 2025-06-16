@@ -13,16 +13,17 @@ import com.example.enlearn.ui.screen.intro.OnboardingScreen2
 import com.example.enlearn.ui.screen.intro.OnboardingScreen3
 import com.example.enlearn.ui.screen.login.LoginScreen
 import com.example.enlearn.ui.screen.login.SignUpScreen
-
+import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
 fun AppNavGraph() {
     val navController = rememberNavController()
-
+    val auth = FirebaseAuth.getInstance()
+    val startDestination = if (auth.currentUser != null) "home" else "onboarding1"
     AuthStateManager(navController)
 
-    NavHost(navController = navController, startDestination = "onboarding1") {
+    NavHost(navController = navController, startDestination = startDestination) {
         // On boarding
         composable("onboarding1") {
             OnboardingScreen1(

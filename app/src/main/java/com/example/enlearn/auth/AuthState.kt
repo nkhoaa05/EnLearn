@@ -14,8 +14,11 @@ fun AuthStateManager(navController: NavController) {
     val currentUser = auth.currentUser
     androidx.compose.runtime.LaunchedEffect(currentUser) {
         if (currentUser == null) {
+            navController.popBackStack(
+                navController.graph.startDestinationId,
+                inclusive = true
+            )
             navController.navigate("login") {
-                popUpTo(navController.graph.startDestinationId) { inclusive = true }
                 launchSingleTop = true
             }
         }
@@ -26,8 +29,11 @@ fun AuthStateManager(navController: NavController) {
         val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             val user = firebaseAuth.currentUser
             if (user == null) {
+                navController.popBackStack(
+                    navController.graph.startDestinationId,
+                    inclusive = true
+                )
                 navController.navigate("login") {
-                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
                     launchSingleTop = true
                 }
             }
