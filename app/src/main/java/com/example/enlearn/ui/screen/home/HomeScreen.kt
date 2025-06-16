@@ -48,7 +48,7 @@ fun HomeScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFF6A2DEE)) // Màu tím
-                .padding(16.dp)
+                .padding(36.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -60,7 +60,7 @@ fun HomeScreen() {
                         painter = painterResource(id = R.drawable.avatar_placeholder),
                         contentDescription = "Profile Picture",
                         modifier = Modifier
-                            .size(48.dp)
+                            .size(60.dp)
                             .clip(CircleShape)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
@@ -74,15 +74,10 @@ fun HomeScreen() {
                         Text(
                             text = "What would you like to learn today?",
                             color = Color.White,
-                            fontSize = 14.sp
+                            fontSize = 16.sp
                         )
                     }
                 }
-                Icon(
-                    imageVector = Icons.Filled.Notifications,
-                    contentDescription = "Notifications",
-                    tint = Color(0xFF00C4CC)
-                )
             }
         }
 
