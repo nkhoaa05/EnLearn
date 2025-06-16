@@ -12,14 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -39,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.enlearn.R
+import com.example.enlearn.ui.components.BottomNavigationBar
 import com.example.enlearn.ui.theme.EnLearnTheme
 
 
@@ -126,8 +119,8 @@ fun ProfileTextField(label: String, value: String) {
 }
 
 @Composable
-fun ProfileMainScreen() {
-    var selectedIndex by remember { mutableStateOf(2) } // Index 2 là Profile
+fun ProfileScreen() {
+    var selectedIndex by remember { mutableStateOf(2) }
 
     Scaffold(
         bottomBar = {
@@ -146,41 +139,11 @@ fun ProfileMainScreen() {
     }
 }
 
-@Composable
-fun BottomNavigationBar(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    val items = listOf("Home", "Lesson", "Profile")
-    val icons = listOf(Icons.Filled.Home, Icons.AutoMirrored.Filled.List, Icons.Filled.Person)
-
-    NavigationBar(containerColor = Color.White) {
-        items.forEachIndexed { index, item ->
-            NavigationBarItem(
-                selected = selectedItem == index,
-                onClick = { onItemSelected(index) },
-                icon = {
-                    Icon(
-                        imageVector = icons[index],
-                        contentDescription = item
-                    )
-                },
-                label = {
-                    Text(text = item)
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color.White,
-                    selectedTextColor = Color.White,
-                    indicatorColor = Color(0xFF6A77EE),
-                    unselectedIconColor = Color.Gray,
-                    unselectedTextColor = Color.Gray
-                )
-            )
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
 fun ProfilePreview() {
     EnLearnTheme {
-        ProfileMainScreen()
+        ProfileScreen()
     }
 }

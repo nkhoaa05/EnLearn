@@ -42,7 +42,7 @@ class LoginViewModel : ViewModel() {
         })
     }
 
-    fun register(email: String, password: String, firstName: String, lastName: String) {
+    fun register(firstName: String, lastName: String, email: String, password: String) {
         authRepository.register(email, password, firstName, lastName, object : AuthResultCallback {
             override fun onSuccess(user: FirebaseUser?) {
                 _user.postValue(user)

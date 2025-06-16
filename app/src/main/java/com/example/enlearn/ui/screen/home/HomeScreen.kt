@@ -16,14 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.enlearn.R
 import com.example.enlearn.ui.theme.EnLearnTheme
+import com.example.enlearn.ui.components.BottomNavigationBar
+import com.example.enlearn.ui.screen.home.ProfileScreen
 
 @Composable
 fun HomeScreen() {
@@ -124,20 +120,6 @@ fun HomeScreen() {
 }
 
 @Composable
-fun LessonScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Lesson Screen", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-    }
-}
-
-@Composable
-fun ProfileScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Profile Screen", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-    }
-}
-
-@Composable
 fun SectionHeader(title: String) {
     Row(
         modifier = Modifier
@@ -210,37 +192,6 @@ fun FeaturedCourseCard(title: String, subtitle: String, modifier: Modifier = Mod
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(text = "2 hours", fontSize = 12.sp, color = Color.Gray)
             }
-        }
-    }
-}
-
-@Composable
-fun BottomNavigationBar(selectedItem: Int, onItemSelected: (Int) -> Unit) {
-    val items = listOf("Home", "Lesson", "Profile")
-    val icons = listOf(Icons.Filled.Home, Icons.AutoMirrored.Filled.MenuBook, Icons.Filled.Person)
-
-    NavigationBar(containerColor = Color.White) {
-        items.forEachIndexed { index, item ->
-            NavigationBarItem(
-                selected = selectedItem == index,
-                onClick = { onItemSelected(index) },
-                icon = {
-                    Icon(
-                        imageVector = icons[index],
-                        contentDescription = item
-                    )
-                },
-                label = {
-                    Text(text = item)
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color.White,
-                    selectedTextColor = Color.White,
-                    indicatorColor = Color(0xFF6A77EE),
-                    unselectedIconColor = Color.Gray,
-                    unselectedTextColor = Color.Gray
-                )
-            )
         }
     }
 }
