@@ -57,6 +57,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation ("com.google.firebase:firebase-auth:23.2.1")
     implementation ("com.google.android.gms:play-services-auth:21.3.0")
+    implementation("com.google.firebase:firebase-firestore")
 
     // --- Jetpack Compose ---
     // BOM (Bill of Materials) để quản lý phiên bản các thư viện Compose

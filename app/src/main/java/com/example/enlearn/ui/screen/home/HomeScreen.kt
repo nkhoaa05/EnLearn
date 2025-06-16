@@ -35,9 +35,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.enlearn.R
+import com.example.enlearn.presentation.profile.ProfileScreen
 import com.example.enlearn.ui.theme.EnLearnTheme
 import com.example.enlearn.ui.components.BottomNavigationBar
-import com.example.enlearn.ui.screen.home.ProfileScreen
 
 @Composable
 fun HomeScreen() {
@@ -217,10 +217,3 @@ fun MainScreen() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun MainPreview() {
-    EnLearnTheme {
-        MainScreen()
-    }
-}
