@@ -97,5 +97,9 @@ fun AppNavGraph() {
 
         // Main
         composable("home") { HomeScreen() }
+        // Lesson
+        composable("lesson"){}
+        // Profile
+        composable("profile"){}
     }
 }
