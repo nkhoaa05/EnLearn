@@ -32,7 +32,7 @@ fun InputField(
         text = label,
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(start = 25.dp)
+        modifier = Modifier.padding(start = 30.dp)
     )
     Spacer(modifier = Modifier.height(5.dp))
     Column(
