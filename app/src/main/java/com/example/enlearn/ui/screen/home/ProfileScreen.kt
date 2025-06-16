@@ -41,7 +41,7 @@ fun ProfileScreenContent() {
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(bottom = 60.dp) // để tránh trùng thanh điều hướng
+            .padding(bottom = 24.dp) // padding tránh nút bị che
     ) {
         // Header
         Box(
@@ -90,9 +90,21 @@ fun ProfileScreenContent() {
 
         // Email Field
         ProfileTextField(label = "Email", value = "dogialong@gmail.com")
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Logout Button
+        Button(
+            onClick = { /* TODO: handle logout */ },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A2DEE)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+        ) {
+            Text(text = "Logout", color = Color.White)
+        }
     }
 }
-
 @Composable
 fun ProfileTextField(label: String, value: String) {
     Column(
