@@ -74,4 +74,16 @@ class LoginViewModel : ViewModel() {
             }
         )
     }
+
+    fun logout(context: Context) {
+        // Đăng xuất Firebase
+        firebaseAuth.signOut()
+
+        // Đăng xuất Google
+        googleAuthRepository.getGoogleSignInClient(context).signOut()
+
+        // Cập nhật trạng thái user
+        _user.value = null
+    }
+
 }
