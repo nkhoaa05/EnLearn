@@ -8,6 +8,8 @@ Logo ứng dụng hiển thị trước khi vào app chính.
 
 Chào người dùng.
 
+Đăng nhập / Đăng kí tài khoản
+
 Xem tiến độ học tập.
 
 Danh sách khóa học nổi bật.
