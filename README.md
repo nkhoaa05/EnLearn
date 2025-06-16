@@ -24,5 +24,7 @@ Bài tập với bộ câu hỏi trắc nghiệm đa dạng.
 
 ## Công Nghệ Sử Dụng
 Ngôn ngữ chính:	Kotlin
-UI Toolkit	Jetpack Compose (Material 3)
+
+UI Toolkit: Jetpack Compose (Material 3)
+
 Navigation:	Jetpack Navigation Compose
