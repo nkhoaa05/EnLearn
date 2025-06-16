@@ -3,6 +3,7 @@ package com.example.enlearn.ui.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -16,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun BottomNavigationBar(selectedItem: Int, onItemSelected: (Int) -> Unit) {
     val items = listOf("Home", "Lesson", "Profile")
-    val icons = listOf(Icons.Filled.Home, Icons.AutoMirrored.Filled.MenuBook, Icons.Filled.Person)
+    val icons = listOf(Icons.Filled.Home, Icons.Filled.MenuBook, Icons.Filled.Person)
 
     NavigationBar(containerColor = Color.White) {
         items.forEachIndexed { index, item ->
