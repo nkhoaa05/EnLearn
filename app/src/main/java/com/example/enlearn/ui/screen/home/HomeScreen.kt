@@ -1,43 +1,28 @@
-package com.example.enlearn.ui.screen.home
+package com.example.enlearn.presentation.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.enlearn.R
-import com.example.enlearn.presentation.profile.ProfileScreen
 import com.example.enlearn.ui.theme.EnLearnTheme
-import com.example.enlearn.ui.components.BottomNavigationBar
 
 @Composable
 fun HomeScreen() {
@@ -45,12 +30,14 @@ fun HomeScreen() {
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .systemBarsPadding() // Bỏ đè status bar
+            .padding(bottom = 60.dp)
     ) {
         // Header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF6A2DEE))
+                .background(Color(0xFF6A2DEE)) // Màu tím
                 .padding(16.dp)
         ) {
             Row(
@@ -69,7 +56,7 @@ fun HomeScreen() {
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
-                            text = "Hello, Nguyen",
+                            text = "Hello, Do",
                             color = Color.White,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
@@ -89,33 +76,48 @@ fun HomeScreen() {
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Continue Course
-        SectionHeader(title = "Continue Course")
-        Spacer(modifier = Modifier.height(8.dp))
-        CourseCard(
-            title = "Beginner's Language Mastery",
-            subtitle = "20 Classes • Easy",
-            progress = "0/20"
-        )
-
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Featured Courses
-        SectionHeader(title = "Featured Courses")
+        // Section: Continue Learning
+        SectionHeader(title = "Continue Learning")
         Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            FeaturedCourseCard(title = "Grammar Quiz", subtitle = "Business English")
-            FeaturedCourseCard(title = "Online Phrases", subtitle = "Business English")
-        }
+        LessonCard(title = "Lesson 1: Greetings & Introductions")
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        // Section: All Lesson Learned
+        SectionHeader(title = "All  Lesson Learned")
+        Spacer(modifier = Modifier.height(8.dp))
+        LessonCard(title = "Lesson 1: Greetings & Introductions")
 
         Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+
+@Composable
+fun LessonCard(title: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(0xFFF4F4F4)) // Xám nhẹ
+            .padding(20.dp)
+    ) {
+        Text(
+            text = title,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            color = Color.Black
+        )
+    }
+}
+
+@Composable
+fun ProfileScreen() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Profile Screen", fontSize = 20.sp, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -197,6 +199,37 @@ fun FeaturedCourseCard(title: String, subtitle: String, modifier: Modifier = Mod
 }
 
 @Composable
+fun BottomNavigationBar(selectedItem: Int, onItemSelected: (Int) -> Unit) {
+    val items = listOf("Home", "Lesson", "Profile")
+    val icons = listOf(Icons.Filled.Home, Icons.Filled.MenuBook, Icons.Filled.Person)
+
+    NavigationBar(containerColor = Color.White) {
+        items.forEachIndexed { index, item ->
+            NavigationBarItem(
+                selected = selectedItem == index,
+                onClick = { onItemSelected(index) },
+                icon = {
+                    Icon(
+                        imageVector = icons[index],
+                        contentDescription = item
+                    )
+                },
+                label = {
+                    Text(text = item)
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = Color.White,
+                    selectedTextColor = Color.White,
+                    indicatorColor = Color(0xFF6A77EE),
+                    unselectedIconColor = Color.Gray,
+                    unselectedTextColor = Color.Gray
+                )
+            )
+        }
+    }
+}
+
+@Composable
 fun MainScreen() {
     var selectedItem by remember { mutableStateOf(0) }
 
@@ -207,13 +240,36 @@ fun MainScreen() {
             }
         }
     ) { padding ->
-        Box(modifier = Modifier.padding(padding)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)) {
             when (selectedItem) {
                 0 -> HomeScreen()
-                1 -> LessonScreen()
+                1 -> LessonScreen() // hoặc Text("Lesson Screen")
                 2 -> ProfileScreen()
             }
         }
     }
 }
+
+@Composable    //Do chưa có Lessonscreen nên để tạm để chạy preview
+fun LessonScreen() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("Lesson Screen", fontSize = 20.sp)
+    }
+}
+
+
+
+@Preview(showBackground = true)
+@Composable
+fun MainPreview() {
+    EnLearnTheme {
+        MainScreen()
+    }
+}
+
 
