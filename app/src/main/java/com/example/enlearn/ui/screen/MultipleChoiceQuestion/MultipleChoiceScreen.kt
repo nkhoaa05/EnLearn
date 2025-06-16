@@ -15,7 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Default
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -69,7 +69,7 @@ fun MultipleChoiceScreen(
                 title = {},
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -84,7 +84,9 @@ fun MultipleChoiceScreen(
             )
         }
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
             if (uiState.isLoading && uiState.currentQuestion == null) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
@@ -108,7 +110,8 @@ fun MultipleChoiceScreen(
 
                         // Hiển thị đáp án đúng khi trả lời sai
                         if (uiState.isSubmitted && uiState.answerStates[uiState.selectedOptionId] == AnswerState.INCORRECT) {
-                            val correctOptionText = question.options.find { it.id == question.correctOptionId }?.text
+                            val correctOptionText =
+                                question.options.find { it.id == question.correctOptionId }?.text
                             Text(
                                 text = correctOptionText ?: "",
                                 style = MaterialTheme.typography.titleLarge,
@@ -133,7 +136,9 @@ fun MultipleChoiceScreen(
 
                         Button(
                             onClick = { viewModel.submitAnswer() },
-                            modifier = Modifier.fillMaxWidth().height(50.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
                             enabled = uiState.selectedOptionId != null && !uiState.isSubmitted
                         ) {
                             Text(text = if (uiState.isSubmitted) "Continue" else "Submit")
@@ -174,15 +179,33 @@ private fun AnswerOptionItem(
         colors = ButtonDefaults.outlinedButtonColors(containerColor = backgroundColor)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             when {
                 isSelected && state == AnswerState.CORRECT ->
-                    Icon(Default.Check, contentDescription = "Correct", tint = Color.White, modifier = Modifier.background(borderColor, CircleShape).padding(2.dp))
+                    Icon(
+                        Default.Check,
+                        contentDescription = "Correct",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .background(borderColor, CircleShape)
+                            .padding(2.dp)
+                    )
+
                 isSelected && state == AnswerState.INCORRECT -> {
-                    Icon(Default.Close, contentDescription = "Incorrect", tint = Color.White, modifier = Modifier.background(borderColor, CircleShape).padding(2.dp))
+                    Icon(
+                        Default.Close,
+                        contentDescription = "Incorrect",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .background(borderColor, CircleShape)
+                            .padding(2.dp)
+                    )
                 }
+
                 else ->
                     RadioButton(selected = isSelected, onClick = null)
             }

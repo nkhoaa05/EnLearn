@@ -4,9 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.enlearn.presentation.home.MainScreen
+import com.example.enlearn.presentation.profile.ProfileScreen
 import com.example.enlearn.ui.screen.MultipleChoiceQuestion.LessonCompletedScreen
 import com.example.enlearn.ui.screen.MultipleChoiceQuestion.MultipleChoiceScreen
-import com.example.enlearn.ui.screen.home.HomeScreen
+import com.example.enlearn.ui.screen.home.LessonsScreen
 import com.example.enlearn.ui.screen.intro.OnboardingScreen1
 import com.example.enlearn.ui.screen.intro.OnboardingScreen2
 import com.example.enlearn.ui.screen.intro.OnboardingScreen3
@@ -96,10 +98,10 @@ fun AppNavGraph() {
         }
 
         // Main
-        composable("home") { HomeScreen() }
+        composable("home") { MainScreen() }
         // Lesson
-        composable("lesson"){}
+        composable("lesson") { LessonsScreen() }
         // Profile
-        composable("profile"){}
+        composable("profile") { ProfileScreen() }
     }
 }

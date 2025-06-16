@@ -12,15 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,10 +28,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.enlearn.R
-import com.example.enlearn.ui.components.BottomNavigationBar
+import com.example.enlearn.presentation.home.MainScreen
+import com.example.enlearn.ui.components.MainScaffoldWithBottomNav
+import com.example.enlearn.ui.screen.home.LessonScreen
 import com.example.enlearn.ui.theme.EnLearnTheme
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 
 
 @Composable
@@ -107,6 +104,7 @@ fun ProfileScreenContent() {
         }
     }
 }
+
 @Composable
 fun ProfileTextField(label: String, value: String) {
     Column(
@@ -134,30 +132,12 @@ fun ProfileTextField(label: String, value: String) {
 
 @Composable
 fun ProfileScreen() {
-    var selectedIndex by remember { mutableStateOf(2) }
-
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(selectedItem = selectedIndex, onItemSelected = {
-                selectedIndex = it
-            })
-        }
-    ) { padding ->
-        Box(modifier = Modifier.padding(padding)) {
-            when (selectedIndex) {
-                0 -> Text("Home Screen")
-                1 -> Text("Lesson Screen")
-                2 -> ProfileScreenContent()
-            }
-        }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun ProfilePreview() {
-    EnLearnTheme {
-        ProfileScreen()
-    }
+    MainScaffoldWithBottomNav(
+        screens = listOf(
+            { MainScreen() },
+            { LessonScreen() },
+            { ProfileScreen() }
+        ),
+        defaultIndex = 2
+    )
 }

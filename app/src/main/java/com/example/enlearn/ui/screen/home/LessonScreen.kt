@@ -19,9 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.enlearn.presentation.home.MainScreen
+import com.example.enlearn.presentation.profile.ProfileScreen
+import com.example.enlearn.ui.components.MainScaffoldWithBottomNav
 import com.example.enlearn.ui.viewModel.ChapterViewModel
 
 
@@ -94,6 +98,7 @@ fun LessonScreen(chapterViewModel: ChapterViewModel = viewModel()) {
     }
 }
 
+
 @Composable
 fun LessonCard(chapter: String, lesson: String, onClick: () -> Unit) {
     Column(
@@ -110,4 +115,17 @@ fun LessonCard(chapter: String, lesson: String, onClick: () -> Unit) {
             color = Color.Black
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LessonsScreen() {
+    MainScaffoldWithBottomNav(
+        screens = listOf(
+            { MainScreen() },
+            { LessonScreen() },
+            { ProfileScreen() }
+        ),
+        defaultIndex = 1
+    )
 }
