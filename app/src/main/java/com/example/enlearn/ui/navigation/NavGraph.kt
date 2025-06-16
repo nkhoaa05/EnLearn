@@ -11,6 +11,7 @@ import com.example.enlearn.ui.screen.intro.OnboardingScreen1
 import com.example.enlearn.ui.screen.intro.OnboardingScreen2
 import com.example.enlearn.ui.screen.intro.OnboardingScreen3
 import com.example.enlearn.ui.screen.login.LoginScreen
+import com.example.enlearn.ui.screen.login.SignUpScreen
 
 
 @Composable
@@ -83,7 +84,7 @@ fun AppNavGraph() {
                 navController
             )
         }
-        composable("signup") {}
+        composable("signup") { SignUpScreen() }
         // Main
         composable("home") { HomeScreen() }
     }

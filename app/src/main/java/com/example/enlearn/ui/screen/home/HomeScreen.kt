@@ -1,17 +1,36 @@
-package com.example.enlearn.presentation.home
+package com.example.enlearn.ui.screen.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.MenuBook
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,7 +45,11 @@ import com.example.enlearn.ui.theme.EnLearnTheme
 
 @Composable
 fun HomeScreen() {
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
         // Header
         Box(
             modifier = Modifier
@@ -75,7 +98,11 @@ fun HomeScreen() {
         // Continue Course
         SectionHeader(title = "Continue Course")
         Spacer(modifier = Modifier.height(8.dp))
-        CourseCard(title = "Beginner's Language Mastery", subtitle = "20 Classes • Easy", progress = "0/20")
+        CourseCard(
+            title = "Beginner's Language Mastery",
+            subtitle = "20 Classes • Easy",
+            progress = "0/20"
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -190,7 +217,7 @@ fun FeaturedCourseCard(title: String, subtitle: String, modifier: Modifier = Mod
 @Composable
 fun BottomNavigationBar(selectedItem: Int, onItemSelected: (Int) -> Unit) {
     val items = listOf("Home", "Lesson", "Profile")
-    val icons = listOf(Icons.Filled.Home, Icons.Filled.MenuBook, Icons.Filled.Person)
+    val icons = listOf(Icons.Filled.Home, Icons.AutoMirrored.Filled.MenuBook, Icons.Filled.Person)
 
     NavigationBar(containerColor = Color.White) {
         items.forEachIndexed { index, item ->
@@ -239,7 +266,7 @@ fun MainScreen() {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 fun MainPreview() {
     EnLearnTheme {

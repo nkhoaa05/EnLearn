@@ -22,7 +22,13 @@ fun ClickableLoginText(
             append("Already an account? ")
         }
         pushStringAnnotation(tag = "LOGIN", annotation = "login")
-        withStyle(style = SpanStyle(color = linkColor, fontWeight = FontWeight.Bold, fontSize = 14.sp)) {
+        withStyle(
+            style = SpanStyle(
+                color = linkColor,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
+            )
+        ) {
             append("Log in")
         }
         pop()

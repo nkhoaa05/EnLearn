@@ -55,7 +55,9 @@ fun LessonCompletedScreen(
         Spacer(modifier = Modifier.height(48.dp))
         Button(
             onClick = onBackToHome,
-            modifier = Modifier.fillMaxWidth().height(50.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
         ) {
             Text("Back to home")
         }

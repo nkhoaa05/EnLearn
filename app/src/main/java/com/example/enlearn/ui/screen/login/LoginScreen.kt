@@ -40,6 +40,7 @@ import com.example.enlearn.R
 import com.example.enlearn.ui.components.AppButton
 import com.example.enlearn.ui.components.InputField
 import com.example.enlearn.ui.components.LoginBtnThird
+import com.example.enlearn.ui.components.NotiLoginEr
 import com.example.enlearn.ui.viewModel.LoginViewModel
 
 
@@ -54,11 +55,15 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var hasNavigated by remember { mutableStateOf(false) }
+    var msg by remember { mutableStateOf("") }
+    var loginSuccessMsg by remember { mutableStateOf("") }
 
     LaunchedEffect(user) {
         if (user != null && !hasNavigated) {
+            loginSuccessMsg = "Đăng nhập thành công"
             hasNavigated = true
             Log.d("LoginScreen", "Login successful, navigating to home")
+            kotlinx.coroutines.delay(2000)
             onLoginSuccess()
         }
     }
@@ -78,7 +83,7 @@ fun LoginScreen(
                 .offset(y = 10.dp)
         ) {
             Text(
-                "Login",
+                "Đăng nhập",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -98,9 +103,8 @@ fun LoginScreen(
                 contentDescription = "Login Icon",
                 modifier = Modifier.size(170.dp)
             )
-
             Text(
-                "For free, join now and start learning",
+                "Tham gia miễn phí ngay và bắt đầu hành trình học tập của bạn!",
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center
             )
@@ -124,14 +128,29 @@ fun LoginScreen(
                 InputField(
                     label = "Password",
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = { password = it},
                     placeholder = "Nhập mật khẩu",
                     isPassword = true
                 )
+                if (email.isNotEmpty() && password.isNotEmpty()) msg = " " // Xóa thông báo
             }
+//            NotiLoginEr(msg)
+            val displayMsg = when {
+                msg.isNotBlank() -> msg
+                !loginSuccessMsg.isNullOrBlank() -> loginSuccessMsg
+                !error.isNullOrBlank() -> error!!
+                else -> ""
+            }
+            NotiLoginEr(displayMsg)
             AppButton(
                 onClick = {
-                    if (email.isNotBlank() && password.isNotBlank()) viewModel.login(email, password)
+                    if (email.isNotBlank() && password.isNotBlank()) viewModel.login(
+                        email,
+                        password
+                    )
+                    else {
+                        msg = "Email hoặc mật khẩu không được để trống"
+                    }
                 }, "Đăng nhập",
                 modifier = Modifier
                     .width(200.dp)
@@ -152,10 +171,9 @@ fun LoginScreen(
                 color = Color.Blue,
                 modifier = Modifier
                     .clickable {
-                        // Xử lý sự kiện click chuyển sang màn tạo tài khoản
+                        navController.navigate("signup")
                     }
             )
-
             Spacer(modifier = Modifier.height(20.dp))
             val context = LocalContext.current
             val startGoogleSignIn by viewModel.startGoogleSignIn.observeAsState()
@@ -167,11 +185,11 @@ fun LoginScreen(
                     viewModel.loginWithGoogle(result.data)
                 }
             }
-
             LoginBtnThird(
                 onClick = {
                     val signInIntent = viewModel.getGoogleSignInIntent(context)
-                    launcher.launch(signInIntent) },
+                    launcher.launch(signInIntent)
+                },
                 logo = R.drawable.g_logo,
             )
 
