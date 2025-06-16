@@ -4,11 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.enlearn.auth.AuthStateManager
 import com.example.enlearn.presentation.home.MainScreen
-import com.example.enlearn.presentation.profile.ProfileScreen
 import com.example.enlearn.ui.screen.MultipleChoiceQuestion.LessonCompletedScreen
 import com.example.enlearn.ui.screen.MultipleChoiceQuestion.MultipleChoiceScreen
-import com.example.enlearn.ui.screen.home.LessonsScreen
 import com.example.enlearn.ui.screen.intro.OnboardingScreen1
 import com.example.enlearn.ui.screen.intro.OnboardingScreen2
 import com.example.enlearn.ui.screen.intro.OnboardingScreen3
@@ -16,9 +15,13 @@ import com.example.enlearn.ui.screen.login.LoginScreen
 import com.example.enlearn.ui.screen.login.SignUpScreen
 
 
+
 @Composable
 fun AppNavGraph() {
     val navController = rememberNavController()
+
+    AuthStateManager(navController)
+
     NavHost(navController = navController, startDestination = "onboarding1") {
         // On boarding
         composable("onboarding1") {
@@ -76,16 +79,17 @@ fun AppNavGraph() {
         }
         // Login
         composable("login") {
-            LoginScreen(
-                onLoginSuccess = {
-                    navController.navigate("home")
-                    {
-                        popUpTo("login") { inclusive = true }
-                    }
-                },
-                navController
-            )
+                LoginScreen(
+                    onLoginSuccess = {
+                        navController.navigate("home")
+                        {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    },
+                    navController
+                )
         }
+
         composable("signup") {
             SignUpScreen(
                 onSignUpSuccess = {
@@ -98,10 +102,8 @@ fun AppNavGraph() {
         }
 
         // Main
-        composable("home") { MainScreen() }
-        // Lesson
-        composable("lesson") { LessonsScreen() }
-        // Profile
-        composable("profile") { ProfileScreen() }
+        composable("home") {
+            MainScreen()
+        }
     }
 }
