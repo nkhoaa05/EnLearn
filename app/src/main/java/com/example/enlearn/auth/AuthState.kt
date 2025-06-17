@@ -10,30 +10,27 @@ import com.google.firebase.auth.FirebaseAuth
 fun AuthStateManager(navController: NavController) {
     val auth = FirebaseAuth.getInstance()
 
-    // Kiểm tra 1 lần khi Composable được dựng
     val currentUser = auth.currentUser
-    androidx.compose.runtime.LaunchedEffect(currentUser) {
+
+    LaunchedEffect(currentUser) {
         if (currentUser == null) {
-            navController.popBackStack(
-                navController.graph.startDestinationId,
-                inclusive = true
-            )
-            navController.navigate("login") {
-                launchSingleTop = true
+            val currentRoute = navController.currentDestination?.route
+            if (currentRoute != null && !currentRoute.startsWith("onboarding")) {
+                navController.navigate("login") {
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
+                }
             }
         }
     }
 
-    // Lắng nghe sự kiện thay đổi trạng thái đăng nhập
     DisposableEffect(auth) {
         val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             val user = firebaseAuth.currentUser
-            if (user == null) {
-                navController.popBackStack(
-                    navController.graph.startDestinationId,
-                    inclusive = true
-                )
+            val currentRoute = navController.currentDestination?.route
+            if (user == null && currentRoute != null && !currentRoute.startsWith("onboarding")) {
                 navController.navigate("login") {
+                    popUpTo(0) { inclusive = true }
                     launchSingleTop = true
                 }
             }
