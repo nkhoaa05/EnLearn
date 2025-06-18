@@ -223,6 +223,8 @@ class LoginViewModel : ViewModel() {
                     )
 
                     Log.d(TAG, "Tạo đối tượng User: $user")
+                    Log.d("ProfileDebug", "User loaded: ${user.fullName}, Email: ${user.email}")
+
 
                     _appUser.value = user
                 } else {
@@ -236,5 +238,11 @@ class LoginViewModel : ViewModel() {
             }
     }
 
+    init {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUser?.uid?.let {
+            loadUserFromFirestore(it)
+        }
+    }
 }
 

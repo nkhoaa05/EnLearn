@@ -17,21 +17,30 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.enlearn.R
+import com.example.enlearn.data.model.User
 import com.example.enlearn.presentation.profile.ProfileScreen
 import com.example.enlearn.ui.components.MainScaffoldWithBottomNav
 import com.example.enlearn.ui.screen.home.LessonScreen
+import com.example.enlearn.ui.viewModel.LoginViewModel
 
 @Composable
 fun HomeScreen() {
+    val viewModel: LoginViewModel = viewModel()
+    val context = LocalContext.current
+    val userState = viewModel.appUser.observeAsState()
+    val user = userState.value ?: User()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,7 +70,7 @@ fun HomeScreen() {
                     Spacer(modifier = Modifier.width(15.dp))
                     Column {
                         Text(
-                            text = "Hello, Do",
+                            text = "Hello, ${user.fullName}",
                             color = Color.White,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
@@ -86,7 +95,7 @@ fun HomeScreen() {
         Spacer(modifier = Modifier.height(40.dp))
 
         // Section: All Lesson Learned
-        SectionHeader(title = "All  Lesson Learned")
+        SectionHeader(title = "All Lesson Learned")
         Spacer(modifier = Modifier.height(8.dp))
         LessonCard(title = "Lesson 1: Greetings & Introductions")
 
