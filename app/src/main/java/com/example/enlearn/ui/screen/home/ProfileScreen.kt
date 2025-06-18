@@ -15,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.enlearn.R
+import com.example.enlearn.data.model.User
 import com.example.enlearn.presentation.home.MainScreen
 import com.example.enlearn.ui.components.InputField
 import com.example.enlearn.ui.components.MainScaffoldWithBottomNav
@@ -37,6 +39,8 @@ import com.example.enlearn.ui.viewModel.LoginViewModel
 fun ProfileScreen() {
     val viewModel: LoginViewModel = viewModel()
     val context = LocalContext.current
+    val userState = viewModel.appUser.observeAsState()
+    val user = userState.value ?: User()
 
     Column(
         modifier = Modifier
@@ -76,7 +80,7 @@ fun ProfileScreen() {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Do",
+                text = user.firstName,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -86,12 +90,12 @@ fun ProfileScreen() {
 
         // Name Field
 //        ProfileTextField(label = "Name", value = "Do Long")
-        InputField("Name", "Do Long", {}, "", false)
+        InputField("Name", user.fullName, {}, "", false)
         Spacer(modifier = Modifier.height(16.dp))
 
         // Email Field
 //        ProfileTextField(label = "Email", value = "dogialong@gmail.com")
-        InputField("Email", "dogialong@gmail.com", {}, "", false)
+        InputField("Email", user.email, {}, "", false)
         Spacer(modifier = Modifier.height(32.dp))
 
         // Logout Button

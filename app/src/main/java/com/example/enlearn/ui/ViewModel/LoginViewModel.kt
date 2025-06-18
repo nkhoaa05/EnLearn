@@ -2,15 +2,16 @@ package com.example.enlearn.ui.viewModel
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.enlearn.auth.GoogleAuthRepository
 import com.example.enlearn.data.AuthRepository
+import com.example.enlearn.data.model.User
 import com.example.enlearn.utils.AuthResultCallback
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.example.enlearn.data.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 
 
@@ -20,6 +21,7 @@ class LoginViewModel : ViewModel() {
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val googleAuthRepository = GoogleAuthRepository(firebaseAuth)
     private val authRepository = AuthRepository()
+
     // Firestore lưu trữ dữ liệu người dùng
     private val firestore = FirebaseFirestore.getInstance()
 
@@ -34,6 +36,7 @@ class LoginViewModel : ViewModel() {
 
     private val _startGoogleSignIn = MutableLiveData<Unit>()
     val startGoogleSignIn: LiveData<Unit> = _startGoogleSignIn
+
     // Login
     fun login(email: String, password: String) {
         authRepository.login(email, password, object : AuthResultCallback {
@@ -43,6 +46,7 @@ class LoginViewModel : ViewModel() {
                     _user.postValue(user)
                     _appUser.postValue(appUser)
                     saveUserToFirestore(appUser)  // Lưu vào Firestore sau đăng nhập
+                    loadUserFromFirestore(user.uid)
                 } else {
                     _error.postValue("Đăng nhập thất bại: user null")
                 }
@@ -53,6 +57,7 @@ class LoginViewModel : ViewModel() {
             }
         })
     }
+
     //Sign up
     fun register(firstName: String, lastName: String, email: String, password: String) {
         authRepository.register(email, password, firstName, lastName, object : AuthResultCallback {
@@ -87,27 +92,27 @@ class LoginViewModel : ViewModel() {
     fun getGoogleSignInIntent(context: Context): Intent {
         return googleAuthRepository.getGoogleSignInClient(context).signInIntent
     }
+
     // Google Login
     fun loginWithGoogle(data: Intent?) {
         googleAuthRepository.handleSignInResult(
             data,
             onSuccess = {
-//                _user.value = googleAuthRepository.getCurrentUser()
-//                val firebaseUser = googleAuthRepository.getCurrentUser()
-//                _user.value = firebaseUser
-//                _appUser.value = firebaseUserToAppUser(firebaseUser)
-//                saveUserToFirestore(appUser)
                 val firebaseUser = googleAuthRepository.getCurrentUser()
                 val appUser = firebaseUserToAppUser(firebaseUser)
                 _user.value = firebaseUser
                 _appUser.value = appUser
                 saveUserToFirestore(appUser)
+                if (firebaseUser != null) {
+                    loadUserFromFirestore(firebaseUser.uid)
+                }
             },
             onError = { e ->
                 _error.value = e.message ?: "Unknown error"
             }
         )
     }
+
     // Logout
     fun logout(context: Context) {
         // Đăng xuất Firebase
@@ -129,8 +134,8 @@ class LoginViewModel : ViewModel() {
         val email = firebaseUser.email ?: ""
         val uid = firebaseUser.uid
 
-        var firstName: String? = null
-        var lastName: String? = null
+        var firstName: String = ""
+        var lastName: String = ""
 
         if (isGoogle) {
             val nameParts = fullName.trim().split(" ")
@@ -164,11 +169,19 @@ class LoginViewModel : ViewModel() {
         userRef.get().addOnSuccessListener { document ->
             if (!document.exists()) {
                 val data = hashMapOf(
+                    "id" to user.id,
                     "email" to user.email,
-                    "fullName" to (user.fullName ?: ""),
+                    "fullName" to user.fullName,
                     "isGoogleUser" to user.isGoogleUser,
-                    "firstName" to (user.firstName ?: ""),
-                    "lastName" to (user.lastName ?: "")
+                    "firstName" to user.firstName,
+                    "lastName" to user.lastName,
+                    "progress" to user.progress.map {
+                        mapOf(
+                            "chapterId" to it.chapterId,
+                            "lessonId" to it.lessonId,
+                            "completed" to it.completed
+                        )
+                    }
                 )
 
                 userRef.set(data)
@@ -184,6 +197,44 @@ class LoginViewModel : ViewModel() {
         }.addOnFailureListener { e ->
             _error.postValue("Lỗi kiểm tra người dùng Firestore: ${e.message}")
         }
+
+    }
+
+    fun loadUserFromFirestore(uid: String) {
+        val TAG = "LoadUser"
+
+        Log.d(TAG, "Bắt đầu tải user từ Firestore với uid: $uid")
+
+        firestore.collection("users").document(uid)
+            .get()
+            .addOnSuccessListener { document ->
+                Log.d(TAG, "Kết nối Firestore thành công.")
+
+                if (document.exists()) {
+                    Log.d(TAG, "Tìm thấy document user: ${document.data}")
+
+                    val user = User(
+                        id = document.id,
+                        email = document.getString("email") ?: "",
+                        fullName = document.getString("fullName") ?: "",
+                        firstName = document.getString("firstName") ?: "",
+                        lastName = document.getString("lastName") ?: "",
+                        isGoogleUser = document.getBoolean("isGoogleUser") ?: false
+                    )
+
+                    Log.d(TAG, "Tạo đối tượng User: $user")
+
+                    _appUser.value = user
+                } else {
+                    Log.e(TAG, "Không tìm thấy người dùng trong Firestore với UID: $uid")
+                    _error.value = "Người dùng không tồn tại trong Firestore"
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Lỗi khi load user từ Firestore: ${e.message}", e)
+                _error.value = "Lỗi khi load user: ${e.message}"
+            }
     }
 
 }
+

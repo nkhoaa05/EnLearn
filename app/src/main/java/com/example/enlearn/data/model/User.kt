@@ -3,14 +3,15 @@ package com.example.enlearn.data.model
 data class User(
     val id: String = "",
     val email: String = "",
-    val firstName: String? = null,
-    val lastName: String? = null,
-    val fullName: String? = null,
-    val isGoogleUser: Boolean = false
+    val firstName: String = "",
+    val lastName: String = "",
+    val fullName: String = "",
+    val isGoogleUser: Boolean = false,
+    var progress: List<Progress> = emptyList()
 ) {
     fun displayName(): String {
         return if (isGoogleUser) {
-            fullName ?: ""
+            fullName
         } else {
             listOfNotNull(lastName, firstName).joinToString(" ").trim()
         }
