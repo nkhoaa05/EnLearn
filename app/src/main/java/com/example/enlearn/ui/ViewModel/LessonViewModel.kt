@@ -20,11 +20,13 @@ class ChapterViewModel : ViewModel() {
     }
 
     private fun fetchChapters() {
+        Log.d("ChapterViewModel", "Fetching chapters")
         db.collection("chapters")
             .get()
             .addOnSuccessListener { result ->
                 val chaptersList = result.documents.mapNotNull { doc ->
                     try {
+                        Log.d("LessonViewModel","Loading..")
                         val title = doc.getString("title") ?: return@mapNotNull null
                         val lessonsRaw = doc.get("lessons") as? List<*> ?: return@mapNotNull null
 
@@ -72,6 +74,7 @@ class ChapterViewModel : ViewModel() {
                             title = title,
                             lessons = lessonList
                         )
+
                     } catch (e: Exception) {
                         Log.e("ChapterViewModel", "Error parsing chapter", e)
                         null
