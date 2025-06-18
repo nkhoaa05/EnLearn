@@ -97,8 +97,7 @@ fun SignUpScreen(
         }
         Spacer(modifier = Modifier.height(25.dp))
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxWidth()
         ) {
             InputField(
                 label = "First Name",
@@ -125,10 +124,16 @@ fun SignUpScreen(
                 placeholder = "Nhập mật khẩu",
                 isPassword = true
             )
-            if (firstname.isNotEmpty() && lastname.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) msg = " "
+            if (firstname.isNotEmpty() && lastname.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) msg =
+                " "
 
             Spacer(modifier = Modifier.height(10.dp))
+        }
 
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             // Hiển thị thông báo lỗi hoặc thành công
             val displayMsg = when {
                 msg.isNotBlank() -> msg
@@ -168,6 +173,7 @@ fun SignUpScreen(
             )
         }
     }
+
 }
 
 
