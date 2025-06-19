@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,7 +47,6 @@ fun LessonScreen(chapterViewModel: ChapterViewModel = viewModel()) {
                 .fillMaxWidth()
                 .height(120.dp)
                 .background(primaryColor)
-                .offset(y = 10.dp)
         ) {
             Text(
                 "Lesson",
@@ -54,9 +56,7 @@ fun LessonScreen(chapterViewModel: ChapterViewModel = viewModel()) {
                 modifier = Modifier.align(Alignment.Center)
             )
         }
-        Spacer(modifier = Modifier.height(50.dp))
-        val chapters by chapterViewModel.chapters
-
+        Spacer(modifier = Modifier.height(30.dp))
         if (chapters.isEmpty()) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -73,21 +73,24 @@ fun LessonScreen(chapterViewModel: ChapterViewModel = viewModel()) {
                     textAlign = TextAlign.Center
                 )
             }
-
         } else {
             LazyColumn {
                 chapters.forEach { chapter ->
                     // Hiển thị tiêu đề chapter
                     item {
-                        Text(
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Text(
                             text = chapter.title,
                             fontWeight = FontWeight.Bold,
                             fontSize = 22.sp,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color.LightGray)
                                 .padding(8.dp)
-                        )
+                                .padding(start = 12.dp)
+                        )  }
+
                     }
                     // Hiển thị các lesson trong chapter
                     items(chapter.lessons.size) { index ->
@@ -111,19 +114,25 @@ fun LessonScreen(chapterViewModel: ChapterViewModel = viewModel()) {
 fun LessonCard(chapter: String, lesson: String, onClick: () -> Unit) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
             .clickable { onClick() }
-            .padding(12.dp),
-        horizontalAlignment = Alignment.Start
+            .padding(12.dp)
+            .height(70.dp)
+            .width(400.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(0xFFF4F4F4)), // Xám nhẹ
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = lesson,
             fontSize = 20.sp,
             fontWeight = FontWeight.Medium,
-            color = Color.Black
+            color = Color.Black,
+            modifier = Modifier.padding(start = 20.dp)
         )
     }
 }
+
 
 @Composable
 fun LessonsScreen() {

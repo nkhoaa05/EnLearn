@@ -17,11 +17,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,10 +35,17 @@ import com.example.enlearn.data.model.User
 import com.example.enlearn.presentation.profile.ProfileScreen
 import com.example.enlearn.ui.components.MainScaffoldWithBottomNav
 import com.example.enlearn.ui.screen.home.LessonScreen
+import com.example.enlearn.ui.viewModel.ChapterViewModel
 import com.example.enlearn.ui.viewModel.LoginViewModel
 
 @Composable
 fun HomeScreen() {
+    val chapterViewModel: ChapterViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        chapterViewModel.fetchChapters()
+    }
+
     val viewModel: LoginViewModel = viewModel()
     val context = LocalContext.current
     val userState = viewModel.appUser.observeAsState()
@@ -51,7 +60,7 @@ fun HomeScreen() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF6A2DEE)) // Màu tím
+                .background(Color(0xFF410FA3))
                 .padding(36.dp)
         ) {
             Row(
@@ -72,13 +81,14 @@ fun HomeScreen() {
                         Text(
                             text = "Hello, ${user.fullName}",
                             color = Color.White,
-                            fontSize = 20.sp,
+                            fontSize = 21.sp,
                             fontWeight = FontWeight.Bold
                         )
+                        Spacer(modifier = Modifier.height(10.dp))
                         Text(
                             text = "What would you like to learn today?",
                             color = Color.White,
-                            fontSize = 16.sp
+                            fontSize = 18.sp
                         )
                     }
                 }
