@@ -20,71 +20,150 @@ class ChapterViewModel : ViewModel() {
     }
 
     private fun fetchChapters() {
-        Log.d("ChapterViewModel", "Fetching chapters")
+        Log.d("ChapterViewModel", "🔍 Bắt đầu fetch chapters từ Firestore")
+
         db.collection("chapters")
             .get()
             .addOnSuccessListener { result ->
-                val chaptersList = result.documents.mapNotNull { doc ->
-                    try {
-                        Log.d("LessonViewModel","Loading..")
-                        val title = doc.getString("title") ?: return@mapNotNull null
-                        val lessonsRaw = doc.get("lessons") as? List<*> ?: return@mapNotNull null
+                Log.d("ChapterViewModel", "✅ Fetch thành công: ${result.size()} documents")
+                val chaptersList = mutableListOf<Chapter>()
+                val totalChapters = result.size()
+                var loadedChapters = 0
 
-                        val lessonList = lessonsRaw.mapNotNull { lessonObj ->
-                            val lessonMap = lessonObj as? Map<*, *> ?: return@mapNotNull null
-                            val lessonId = lessonMap["id"] as? String ?: return@mapNotNull null
-                            val lessonTitle =
-                                lessonMap["title"] as? String ?: return@mapNotNull null
-                            val questionsRaw =
-                                lessonMap["questions"] as? List<*> ?: return@mapNotNull null
+                for (doc in result.documents) {
+                    val chapterId = doc.id
+                    val title = doc.getString("title")
 
-                            val questionList = questionsRaw.mapNotNull { questionObj ->
-                                val questionMap =
-                                    questionObj as? Map<*, *> ?: return@mapNotNull null
-                                val number = (questionMap["number"] as? Long)?.toInt()
-                                    ?: return@mapNotNull null
-                                val questionText =
-                                    questionMap["question"] as? String ?: return@mapNotNull null
-                                val options =
-                                    questionMap["options"] as? List<*> ?: return@mapNotNull null
-                                val correctAnswerIndex =
-                                    (questionMap["correctAnswerIndex"] as? Long)?.toInt()
-                                        ?: return@mapNotNull null
+                    if (title == null) {
+                        Log.d("ChapterViewModel", "⚠️ Bỏ qua chapter [$chapterId] vì thiếu title")
+                        loadedChapters++
+                        continue
+                    }
 
-                                val optionStrings = options.mapNotNull { it as? String }
-                                if (optionStrings.size != options.size) return@mapNotNull null
+                    Log.d("ChapterViewModel", "📘 Chapter: id=$chapterId, title=$title")
 
-                                Question(
-                                    number = number,
-                                    question = questionText,
-                                    options = optionStrings,
-                                    correctAnswerIndex = correctAnswerIndex
-                                )
+                    // Fetch lessons trong subcollection
+                    db.collection("chapters")
+                        .document(chapterId)
+                        .collection("lessons")
+                        .get()
+                        .addOnSuccessListener { lessonResult ->
+                            Log.d(
+                                "ChapterViewModel",
+                                "➡️ Đã fetch ${lessonResult.size()} lessons cho chapter [$chapterId]"
+                            )
+
+                            val lessonList = lessonResult.documents.mapNotNull { lessonDoc ->
+                                try {
+                                    val lessonId = lessonDoc.id
+                                    val lessonTitle = lessonDoc.getString("title") ?: run {
+                                        Log.d(
+                                            "ChapterViewModel",
+                                            "⚠️ Lesson [$lessonId] thiếu title"
+                                        )
+                                        return@mapNotNull null
+                                    }
+
+                                    val questionsRaw = lessonDoc.get("questions") as? List<*>
+                                    if (questionsRaw == null) {
+                                        Log.d(
+                                            "ChapterViewModel",
+                                            "⚠️ Lesson [$lessonId] không có trường 'questions'"
+                                        )
+                                        return@mapNotNull null
+                                    }
+
+                                    val questionList = questionsRaw.mapNotNull { questionObj ->
+                                        val questionMap =
+                                            questionObj as? Map<*, *> ?: return@mapNotNull null
+                                        val number = (questionMap["number"] as? Long)?.toInt()
+                                        val questionText = questionMap["question"] as? String
+                                        val options = questionMap["options"] as? List<*>
+                                        val correctAnswerIndex =
+                                            (questionMap["correctAnswerIndex"] as? Long)?.toInt()
+
+                                        if (number == null || questionText == null || options == null || correctAnswerIndex == null) {
+                                            Log.d(
+                                                "ChapterViewModel",
+                                                "⚠️ Bỏ qua question không đầy đủ trong lesson [$lessonId]"
+                                            )
+                                            return@mapNotNull null
+                                        }
+
+                                        val optionStrings = options.mapNotNull { it as? String }
+                                        if (optionStrings.size != options.size) {
+                                            Log.d(
+                                                "ChapterViewModel",
+                                                "⚠️ Câu hỏi có option không hợp lệ trong lesson [$lessonId]"
+                                            )
+                                            return@mapNotNull null
+                                        }
+
+                                        Log.d(
+                                            "ChapterViewModel",
+                                            "📝 Loaded question $number in lesson [$lessonId]"
+                                        )
+
+                                        Question(
+                                            number = number,
+                                            question = questionText,
+                                            options = optionStrings,
+                                            correctAnswerIndex = correctAnswerIndex
+                                        )
+                                    }
+
+                                    Log.d(
+                                        "ChapterViewModel",
+                                        "📗 Loaded lesson: $lessonId, title=$lessonTitle, questions=${questionList.size}"
+                                    )
+
+                                    Lesson(
+                                        id = lessonId,
+                                        title = lessonTitle,
+                                        questions = questionList
+                                    )
+                                } catch (e: Exception) {
+                                    Log.e("ChapterViewModel", "❌ Lỗi khi parse lesson", e)
+                                    null
+                                }
                             }
 
-                            Lesson(
-                                id = lessonId,
-                                title = lessonTitle,
-                                questions = questionList
+                            chaptersList.add(
+                                Chapter(
+                                    id = chapterId,
+                                    title = title,
+                                    lessons = lessonList
+                                )
                             )
+
+                            loadedChapters++
+                            Log.d(
+                                "ChapterViewModel",
+                                "✅ Đã load chapter [$chapterId], tổng lessons: ${lessonList.size}"
+                            )
+
+                            // Khi tất cả các chapter đã load xong
+                            if (loadedChapters == totalChapters) {
+                                _chapters.value = chaptersList
+                                Log.d(
+                                    "ChapterViewModel",
+                                    "🎉 Hoàn tất: Đã load ${chaptersList.size} chapters đầy đủ"
+                                )
+                            }
                         }
-
-                        Chapter(
-                            id = doc.id,
-                            title = title,
-                            lessons = lessonList
-                        )
-
-                    } catch (e: Exception) {
-                        Log.e("ChapterViewModel", "Error parsing chapter", e)
-                        null
-                    }
+                        .addOnFailureListener {
+                            Log.e(
+                                "ChapterViewModel",
+                                "❌ Lỗi load lessons cho chapter [$chapterId]",
+                                it
+                            )
+                            loadedChapters++
+                        }
                 }
-
-                _chapters.value = chaptersList
             }
             .addOnFailureListener { exception ->
-                Log.e("ChapterViewModel", "Error fetching chapters", exception)
+                Log.e("ChapterViewModel", "❌ Lỗi fetch chapters", exception)
             }
     }
 }
+
