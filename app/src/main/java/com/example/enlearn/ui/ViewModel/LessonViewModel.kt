@@ -19,6 +19,7 @@ class ChapterViewModel : ViewModel() {
         fetchChapters()
     }
 
+    // Load Lesson trong Lesson Screen
     fun fetchChapters() {
         Log.d("ChapterViewModel", "🔍 Bắt đầu fetch chapters từ Firestore")
 
@@ -169,5 +170,7 @@ class ChapterViewModel : ViewModel() {
                 Log.e("ChapterViewModel", "❌ Lỗi fetch chapters", exception)
             }
     }
+
+
 }
 

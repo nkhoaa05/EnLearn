@@ -4,5 +4,6 @@ data class Progress(
     val chapterId: String = "",
     val lessonId: String = "",
     val completed: Boolean = false,
+    val finishedAt: Long = 0L
 )
 

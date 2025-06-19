@@ -12,6 +12,7 @@ import com.example.enlearn.data.model.User
 import com.example.enlearn.utils.AuthResultCallback
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 
@@ -175,17 +176,23 @@ class LoginViewModel : ViewModel() {
                     "isGoogleUser" to user.isGoogleUser,
                     "firstName" to user.firstName,
                     "lastName" to user.lastName,
-                    "progress" to user.progress.map {
-                        mapOf(
-                            "chapterId" to it.chapterId,
-                            "lessonId" to it.lessonId,
-                            "completed" to it.completed
-                        )
-                    }
                 )
 
                 userRef.set(data)
                     .addOnSuccessListener {
+                        user.progress.forEach { progress ->
+                            val progressRef = userRef
+                                .collection("progress")
+                                .document("${progress.chapterId}_${progress.lessonId}")
+
+                            val progressData = mapOf(
+                                "chapterId" to progress.chapterId,
+                                "lessonId" to progress.lessonId,
+                                "completed" to progress.completed,
+                                "finishedAt" to FieldValue.serverTimestamp()
+                            )
+                            progressRef.set(progressData)
+                        }
                         println("Lưu user mới lên Firestore thành công: ${user.id}")
                     }
                     .addOnFailureListener { e ->
