@@ -19,7 +19,7 @@ class ChapterViewModel : ViewModel() {
         fetchChapters()
     }
 
-    private fun fetchChapters() {
+    fun fetchChapters() {
         Log.d("ChapterViewModel", "🔍 Bắt đầu fetch chapters từ Firestore")
 
         db.collection("chapters")
