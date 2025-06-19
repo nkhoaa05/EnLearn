@@ -144,7 +144,11 @@ class ChapterViewModel : ViewModel() {
 
                             // Khi tất cả các chapter đã load xong
                             if (loadedChapters == totalChapters) {
-                                _chapters.value = chaptersList
+                                val sortedChapters = chaptersList.sortedBy { chapter ->
+                                    val match = Regex("""Chapter\s*(\d+)""").find(chapter.title)
+                                    match?.groupValues?.get(1)?.toIntOrNull() ?: Int.MAX_VALUE
+                                }
+                                _chapters.value = sortedChapters
                                 Log.d(
                                     "ChapterViewModel",
                                     "🎉 Hoàn tất: Đã load ${chaptersList.size} chapters đầy đủ"
