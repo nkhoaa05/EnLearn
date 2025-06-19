@@ -1,11 +1,15 @@
 package com.example.enlearn.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.enlearn.auth.AuthStateManager
 import com.example.enlearn.presentation.home.MainScreen
+import com.example.enlearn.ui.ViewModel.MultipleChoice.MultipleChoiceViewModelFactory
 import com.example.enlearn.ui.screen.MultipleChoiceQuestion.LessonCompletedScreen
 import com.example.enlearn.ui.screen.MultipleChoiceQuestion.MultipleChoiceScreen
 import com.example.enlearn.ui.screen.intro.OnboardingScreen1
@@ -13,6 +17,7 @@ import com.example.enlearn.ui.screen.intro.OnboardingScreen2
 import com.example.enlearn.ui.screen.intro.OnboardingScreen3
 import com.example.enlearn.ui.screen.login.LoginScreen
 import com.example.enlearn.ui.screen.login.SignUpScreen
+import com.example.enlearn.ui.viewmodel.MultipleChoiceViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -58,16 +63,29 @@ fun AppNavGraph() {
         }
 
         //Navigation MutipleChoiceQuestion
-        composable("lesson") {
+        composable(
+            route = "lesson/{chapterId}/{lessonId}",
+            arguments = listOf(
+                navArgument("chapterId") { type = NavType.StringType },
+                navArgument("lessonId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val chapterId = backStackEntry.arguments?.getString("chapterId") ?: return@composable
+            val lessonId = backStackEntry.arguments?.getString("lessonId") ?: return@composable
+
+            // Sử dụng Factory để tạo ViewModel
+            val viewModel: MultipleChoiceViewModel = viewModel(
+                factory = MultipleChoiceViewModelFactory(chapterId, lessonId)
+            )
+
             MultipleChoiceScreen(
+                viewModel = viewModel,
                 onNavigateToCompleted = {
                     navController.navigate("completed") {
                         popUpTo("lesson") { inclusive = true }
                     }
                 },
-                onBack = {
-                    // navController.popBackStack()
-                }
+                onBack = { navController.popBackStack() }
             )
         }
         composable("completed") {

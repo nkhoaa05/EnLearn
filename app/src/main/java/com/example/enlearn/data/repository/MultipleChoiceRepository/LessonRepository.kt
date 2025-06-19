@@ -1,8 +1,8 @@
 package com.example.enlearn.data.repository.MultipleChoiceRepository
 
-import com.example.enlearn.data.model.MultipleChoiceOject.Question
+import com.example.enlearn.data.model.MultipleChoiceOject.LessonData
 
 interface LessonRepository {
-    // Lấy câu hỏi tiếp theo, trả về null nếu hết bài học
-    suspend fun getNextQuestion(): Question?
+    // Lấy một bài học cụ thể dựa vào ID của chapter và lesson
+    suspend fun getLesson(chapterId: String, lessonId: String): Result<LessonData>
 }
