@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -53,6 +54,7 @@ fun ProfileScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFF6A2DEE))
+                .height(120.dp)
                 .padding(vertical = 16.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -103,10 +105,16 @@ fun ProfileScreen() {
             onClick = { viewModel.logout(context) },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A2DEE)),
             modifier = Modifier
+                .height(50.dp)
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
                 .padding(horizontal = 24.dp)
         ) {
-            Text(text = "Logout", color = Color.White)
+            Text(
+                text = "Logout",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White)
         }
     }
     }
