@@ -109,16 +109,4 @@ fun ProfileScreen() {
             Text(text = "Logout", color = Color.White)
         }
     }
-}
-
-@Composable
-fun ProfScreen() {
-    MainScaffoldWithBottomNav(
-        screens = listOf(
-            { MainScreen() },
-            { LessonScreen() },
-            { ProfileScreen() }
-        ),
-        defaultIndex = 2
-    )
-}
+    }

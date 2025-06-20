@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LessonCompletedScreen(
+    score: Int,
+    totalQuestions: Int,
     onBackToHome: () -> Unit
 ) {
     Column(

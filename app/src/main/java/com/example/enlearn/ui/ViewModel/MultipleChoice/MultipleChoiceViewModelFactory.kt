@@ -18,7 +18,6 @@ class MultipleChoiceViewModelFactory(
             // Nếu đúng, tạo một instance mới và truyền repository cùng các ID vào
             @Suppress("UNCHECKED_CAST")
             return MultipleChoiceViewModel(
-                lessonRepository = FirestoreLessonRepository(), // Khởi tạo repository ở đây
                 chapterId = chapterId,
                 lessonId = lessonId
             ) as T

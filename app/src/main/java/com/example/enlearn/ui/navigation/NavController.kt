@@ -62,41 +62,8 @@ fun AppNavGraph() {
             )
         }
 
-        //Navigation MutipleChoiceQuestion
-        composable(
-            route = "lesson/{chapterId}/{lessonId}",
-            arguments = listOf(
-                navArgument("chapterId") { type = NavType.StringType },
-                navArgument("lessonId") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val chapterId = backStackEntry.arguments?.getString("chapterId") ?: return@composable
-            val lessonId = backStackEntry.arguments?.getString("lessonId") ?: return@composable
 
-            // Sử dụng Factory để tạo ViewModel
-            val viewModel: MultipleChoiceViewModel = viewModel(
-                factory = MultipleChoiceViewModelFactory(chapterId, lessonId)
-            )
-
-            MultipleChoiceScreen(
-                viewModel = viewModel,
-                onNavigateToCompleted = {
-                    navController.navigate("completed") {
-                        popUpTo("lesson") { inclusive = true }
-                    }
-                },
-                onBack = { navController.popBackStack() }
-            )
-        }
-        composable("completed") {
-            LessonCompletedScreen(
-                onBackToHome = {
-                    // Xử lý khi nhấn back to home
-                    // navController.navigate("home") { popUpTo... }
-                }
-            )
-        }
-        // Login
+                        // Login
         composable("login") {
                 LoginScreen(
                     onLoginSuccess = {
@@ -122,7 +89,61 @@ fun AppNavGraph() {
 
         // Main
         composable("home") {
-            MainScreen()
+            // 1. Truyền hành động `onLessonClicked` vào MainScreen
+            MainScreen(
+                onLessonClicked = { chapterId, lessonId ->
+                    // 2. Khi hành động này được gọi, thực hiện điều hướng
+                    navController.navigate("lesson/$chapterId/$lessonId")
+                }
+            )
         }
+
+        //Navigation MutipleChoiceQuestion
+        composable(
+            route = "lesson/{chapterId}/{lessonId}",
+            arguments = listOf(
+                navArgument("chapterId") { type = NavType.StringType },
+                navArgument("lessonId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val chapterId = backStackEntry.arguments?.getString("chapterId") ?: return@composable
+            val lessonId = backStackEntry.arguments?.getString("lessonId") ?: return@composable
+
+            val viewModel: MultipleChoiceViewModel = viewModel(
+                factory = MultipleChoiceViewModelFactory(chapterId, lessonId)
+            )
+
+            MultipleChoiceScreen(
+                viewModel = viewModel,
+                // SỬA Ở ĐÂY: Đặt tên rõ ràng cho các tham số
+                onNavigateToCompleted = { score, totalQuestions ->
+                    // Bây giờ bạn có thể dùng `score` và `totalQuestions`
+                    navController.navigate("completed/$score/$totalQuestions") {
+                        popUpTo("home")
+                    }
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        // Màn hình hoàn thành bài học
+        composable(
+            route = "completed/{score}/{totalQuestions}",
+            arguments = listOf(
+                navArgument("score") { type = NavType.IntType },
+                navArgument("totalQuestions") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val score = backStackEntry.arguments?.getInt("score") ?: 0
+            val totalQuestions = backStackEntry.arguments?.getInt("totalQuestions") ?: 0
+            LessonCompletedScreen(
+                score = score,
+                totalQuestions = totalQuestions,
+                onBackToHome = {
+                    navController.popBackStack() // Quay lại màn hình home
+                }
+            )
+        }
+
     }
 }

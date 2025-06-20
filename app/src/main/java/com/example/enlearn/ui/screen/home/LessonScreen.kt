@@ -30,7 +30,8 @@ import com.example.enlearn.ui.viewModel.ChapterViewModel
 
 
 @Composable
-fun LessonScreen(chapterViewModel: ChapterViewModel = viewModel()) {
+fun LessonScreen(chapterViewModel: ChapterViewModel = viewModel(),
+                 onLessonClicked: (chapterId: String, lessonId: String) -> Unit) {
     val chapters by chapterViewModel.chapters
     val primaryColor = Color(0xFF410FA3)
     Column(
@@ -93,10 +94,10 @@ fun LessonScreen(chapterViewModel: ChapterViewModel = viewModel()) {
                     items(chapter.lessons.size) { index ->
                         val lesson = chapter.lessons[index]
                         LessonCard(
-                            chapter = chapter.title,
-                            lesson = lesson.title,
+                            lessonTitle = lesson.title,
                             onClick = {
                                 // Xử lý click ở đây
+                                onLessonClicked(chapter.id, lesson.id)
                             }
                         )
                     }
@@ -108,31 +109,20 @@ fun LessonScreen(chapterViewModel: ChapterViewModel = viewModel()) {
 
 
 @Composable
-fun LessonCard(chapter: String, lesson: String, onClick: () -> Unit) {
+fun LessonCard(lessonTitle: String, onClick: () -> Unit) {
+    // Sửa lại để nhận đúng tham số
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable(onClick = onClick) // Gán hành động vào đây
             .padding(12.dp),
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = lesson,
+            text = lessonTitle,
             fontSize = 20.sp,
             fontWeight = FontWeight.Medium,
             color = Color.Black
         )
     }
-}
-
-@Composable
-fun LessonsScreen() {
-    MainScaffoldWithBottomNav(
-        screens = listOf(
-            { MainScreen() },
-            { LessonScreen() },
-            { ProfileScreen() }
-        ),
-        defaultIndex = 1
-    )
 }
