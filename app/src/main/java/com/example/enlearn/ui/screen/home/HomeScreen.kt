@@ -138,14 +138,19 @@ fun SectionHeader(title: String) {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    // 1. Nhận hành động từ AppNavGraph
+    onLessonClicked: (chapterId: String, lessonId: String) -> Unit
+) {
     MainScaffoldWithBottomNav(
         screens = listOf(
             { HomeScreen() },
-            { LessonScreen() },
+            // 2. Truyền hành động xuống cho LessonScreen
+            { LessonScreen(onLessonClicked = onLessonClicked) },
             { ProfileScreen() }
         ),
-        defaultIndex = 0
+        defaultIndex = 0 // Hoặc lấy từ state nào đó
     )
 }
+
 

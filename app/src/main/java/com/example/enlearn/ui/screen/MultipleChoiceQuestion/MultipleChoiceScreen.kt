@@ -39,14 +39,16 @@ import com.example.enlearn.ui.viewmodel.MultipleChoiceViewModel
 @Composable
 fun MultipleChoiceScreen(
     viewModel: MultipleChoiceViewModel,
-    onNavigateToCompleted: () -> Unit,
+    onNavigateToCompleted: (score: Int, totalQuestions: Int) -> Unit,
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     if (uiState.isLessonFinished) {
         LaunchedEffect(uiState.isLessonFinished) {
-            onNavigateToCompleted()
+            if (uiState.isLessonFinished) { // Thêm kiểm tra này để đảm bảo chỉ gọi khi isLessonFinished là true
+                onNavigateToCompleted(uiState.score, uiState.questions.size) // Sửa ở đây
+            }
         }
     }
 
@@ -101,8 +103,8 @@ fun MultipleChoiceScreen(
             modifier = Modifier.align(Alignment.BottomCenter),
             isVisible = uiState.isSubmitted,
             answerState = uiState.answerState,
-            onNext = { viewModel.goToNextQuestion() },
-            onTryAgain = { viewModel.tryAgain() }
+            onNext = { viewModel.proceedToNextQuestion() },
+            onTryAgain = { viewModel.proceedToNextQuestion() }
         )
 
         // Nút Submit chính, chỉ hiển thị khi chưa submit
@@ -154,7 +156,7 @@ private fun ResultPanel(
             AnswerState.INCORRECT -> {
                 backgroundColor = Color(0xFFD50000) // Red
                 title = "Wrong Answer!"
-                buttonText = "Try again"
+                buttonText = "Next"
                 buttonAction = onTryAgain
             }
             else -> {

@@ -2,9 +2,10 @@ package com.example.enlearn.data.model.MultipleChoiceOject
 
 import com.google.firebase.firestore.IgnoreExtraProperties
 
-@IgnoreExtraProperties
-data class ChapterData(
+data class Chapter(
     val id: String = "",
     val title: String = "",
-    val lessons: List<LessonData> = emptyList()
-)
+    val lessons: List<Lesson> = emptyList()
+) {
+    constructor() : this("", "", emptyList())
+}
