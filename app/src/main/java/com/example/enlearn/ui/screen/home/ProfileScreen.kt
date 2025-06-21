@@ -52,7 +52,8 @@ fun ProfileScreen() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF6A2DEE))
+                .height(120.dp)
+                .background(Color(0xFF410FA3))
                 .padding(vertical = 16.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -89,12 +90,10 @@ fun ProfileScreen() {
         Spacer(modifier = Modifier.height(32.dp))
 
         // Name Field
-//        ProfileTextField(label = "Name", value = "Do Long")
         InputField("Name", user.fullName, {}, "", false)
         Spacer(modifier = Modifier.height(16.dp))
 
         // Email Field
-//        ProfileTextField(label = "Email", value = "dogialong@gmail.com")
         InputField("Email", user.email, {}, "", false)
         Spacer(modifier = Modifier.height(32.dp))
 

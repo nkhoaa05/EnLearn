@@ -51,7 +51,7 @@ fun HomeScreen() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF6A2DEE)) // Màu tím
+                .background(Color(0xFF410FA3)) // Màu tím
                 .padding(36.dp)
         ) {
             Row(
