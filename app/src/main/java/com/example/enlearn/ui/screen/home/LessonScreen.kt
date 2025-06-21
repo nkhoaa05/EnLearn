@@ -127,7 +127,7 @@ private fun LessonItem(
     ) {
         Text(
             text = lesson.title,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
         )

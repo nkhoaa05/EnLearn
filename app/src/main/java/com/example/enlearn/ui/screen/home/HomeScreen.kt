@@ -41,6 +41,7 @@ fun HomeScreen() {
     val context = LocalContext.current
     val userState = viewModel.appUser.observeAsState()
     val user = userState.value ?: User()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,7 +65,7 @@ fun HomeScreen() {
                         painter = painterResource(id = R.drawable.avatar_placeholder),
                         contentDescription = "Profile Picture",
                         modifier = Modifier
-                            .size(60.dp)
+                            .size(80.dp)
                             .clip(CircleShape)
                     )
                     Spacer(modifier = Modifier.width(15.dp))
@@ -75,10 +76,11 @@ fun HomeScreen() {
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
                         )
+                        Spacer(modifier = Modifier.height(5.dp))
                         Text(
                             text = "What would you like to learn today?",
                             color = Color.White,
-                            fontSize = 16.sp
+                            fontSize = 18.sp
                         )
                     }
                 }
@@ -92,7 +94,7 @@ fun HomeScreen() {
         Spacer(modifier = Modifier.height(8.dp))
         LessonCard(title = "Lesson 1: Greetings & Introductions")
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(100.dp))
 
         // Section: All Lesson Learned
         SectionHeader(title = "All Lesson Learned")
@@ -117,7 +119,7 @@ fun LessonCard(title: String) {
         Text(
             text = title,
             fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = Color.Black
         )
     }
@@ -132,7 +134,7 @@ fun SectionHeader(title: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = title, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text(text = title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Text(text = "See All", color = Color.Gray, fontSize = 14.sp)
     }
 }

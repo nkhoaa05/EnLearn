@@ -59,7 +59,7 @@ fun ProfileScreen() {
                 text = "Profile",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+                fontSize = 24.sp
             )
         }
 
@@ -74,13 +74,13 @@ fun ProfileScreen() {
                 painter = painterResource(id = R.drawable.avatar_placeholder),
                 contentDescription = "Profile Image",
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(130.dp)
                     .clip(CircleShape)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = user.firstName,
-                fontSize = 20.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
         }
