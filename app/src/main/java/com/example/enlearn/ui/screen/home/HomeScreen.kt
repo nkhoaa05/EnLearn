@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +34,7 @@ import com.example.enlearn.data.model.User
 import com.example.enlearn.presentation.profile.ProfileScreen
 import com.example.enlearn.ui.components.MainScaffoldWithBottomNav
 import com.example.enlearn.ui.screen.home.LessonScreen
+import com.example.enlearn.ui.viewModel.ChapterViewModel
 import com.example.enlearn.ui.viewModel.LoginViewModel
 
 @Composable
@@ -41,6 +43,11 @@ fun HomeScreen() {
     val context = LocalContext.current
     val userState = viewModel.appUser.observeAsState()
     val user = userState.value ?: User()
+
+    val chapterViewModel: ChapterViewModel = viewModel()
+    LaunchedEffect(Unit) {
+        chapterViewModel.fetchChapters()
+    }
 
     Column(
         modifier = Modifier
