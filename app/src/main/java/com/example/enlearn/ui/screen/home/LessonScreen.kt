@@ -38,7 +38,7 @@ fun LessonScreen(
 
 ) {
     val chapters by chapterViewModel.chapters
-    val primaryColor = Color(0xFF6A2DEE) // Màu tím từ header của bạn
+    val primaryColor = Color(0xFF410FA3) // Màu tím từ header của bạn
 
     // Sử dụng Box để tạo hiệu ứng lớp chồng
     Box(
@@ -47,7 +47,8 @@ fun LessonScreen(
             .background(primaryColor)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize()
+                .height(120.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Header Text
