@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -28,10 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.enlearn.R
 import com.example.enlearn.data.model.User
-import com.example.enlearn.presentation.home.MainScreen
-import com.example.enlearn.ui.components.InputField
-import com.example.enlearn.ui.components.MainScaffoldWithBottomNav
-import com.example.enlearn.ui.screen.home.LessonScreen
+import com.example.enlearn.ui.components.InfoField
 import com.example.enlearn.ui.viewModel.LoginViewModel
 
 
@@ -90,11 +88,11 @@ fun ProfileScreen() {
         Spacer(modifier = Modifier.height(32.dp))
 
         // Name Field
-        InputField("Name", user.fullName, {}, "", false)
+        InfoField("Name", user.fullName)
         Spacer(modifier = Modifier.height(16.dp))
 
         // Email Field
-        InputField("Email", user.email, {}, "", false)
+        InfoField("Email", user.email)
         Spacer(modifier = Modifier.height(32.dp))
 
         // Logout Button
@@ -102,10 +100,17 @@ fun ProfileScreen() {
             onClick = { viewModel.logout(context) },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A2DEE)),
             modifier = Modifier
+                .height(50.dp)
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
                 .padding(horizontal = 24.dp)
         ) {
-            Text(text = "Logout", color = Color.White)
+            Text(
+                text = "Logout",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
         }
     }
-    }
+}
