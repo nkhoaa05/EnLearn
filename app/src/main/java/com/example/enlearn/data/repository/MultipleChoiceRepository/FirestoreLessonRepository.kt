@@ -1,7 +1,8 @@
 package com.example.enlearn.data.repository.MultipleChoiceRepository
 
+import com.example.enlearn.data.model.Lesson
 import com.example.enlearn.data.model.MultipleChoiceOject.Chapter
-import com.example.enlearn.data.model.MultipleChoiceOject.Lesson
+import com.example.enlearn.data.model.MultipleChoiceOject.LessonData
 
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await

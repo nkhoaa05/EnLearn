@@ -1,6 +1,6 @@
 package com.example.enlearn.data.model.MultipleChoiceOject
 
-import com.google.firebase.firestore.IgnoreExtraProperties
+import com.example.enlearn.data.model.Lesson
 
 data class Chapter(
     val id: String = "",

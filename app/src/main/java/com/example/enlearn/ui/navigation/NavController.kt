@@ -86,7 +86,6 @@ fun AppNavGraph() {
                 navController
             )
         }
-
         // Main
         composable("home") {
             // 1. Truyền hành động `onLessonClicked` vào MainScreen
@@ -119,7 +118,7 @@ fun AppNavGraph() {
                 onNavigateToCompleted = { score, totalQuestions ->
                     // Bây giờ bạn có thể dùng `score` và `totalQuestions`
                     navController.navigate("completed/$score/$totalQuestions") {
-                        popUpTo("home")
+                        popUpTo("lesson_list")
                     }
                 },
                 onBack = { navController.popBackStack() }

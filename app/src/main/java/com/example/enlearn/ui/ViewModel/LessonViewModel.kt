@@ -4,10 +4,14 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.enlearn.data.model.Chapter
 import com.example.enlearn.data.model.Lesson
-import com.example.enlearn.data.model.Question
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class ChapterViewModel : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
@@ -20,150 +24,63 @@ class ChapterViewModel : ViewModel() {
     }
 
     private fun fetchChapters() {
-        Log.d("ChapterViewModel", "🔍 Bắt đầu fetch chapters từ Firestore")
+        Log.d("ChapterViewModel", "🔍 Bắt đầu fetch chapters từ Firestore (phiên bản Coroutine)")
+        viewModelScope.launch {
+            try {
+                // 1. Lấy tất cả các document chapter
+                val chapterDocuments = db.collection("chapters").get().await().documents
+                Log.d("ChapterViewModel", "✅ Fetch thành công: ${chapterDocuments.size} documents chapter")
 
-        db.collection("chapters")
-            .get()
-            .addOnSuccessListener { result ->
-                Log.d("ChapterViewModel", "✅ Fetch thành công: ${result.size()} documents")
-                val chaptersList = mutableListOf<Chapter>()
-                val totalChapters = result.size()
-                var loadedChapters = 0
+                // 2. Dùng async để tải tất cả các lesson của tất cả các chapter MỘT CÁCH SONG SONG
+                val chapterJobs = chapterDocuments.map { doc ->
+                    async { // Mỗi chapter là một công việc bất đồng bộ (job)
+                        val chapterId = doc.id
+                        val title = doc.getString("title")
 
-                for (doc in result.documents) {
-                    val chapterId = doc.id
-                    val title = doc.getString("title")
+                        if (title == null) {
+                            Log.d("ChapterViewModel", "⚠️ Bỏ qua chapter [$chapterId] vì thiếu title")
+                            return@async null // Trả về null nếu chapter không hợp lệ
+                        }
 
-                    if (title == null) {
-                        Log.d("ChapterViewModel", "⚠️ Bỏ qua chapter [$chapterId] vì thiếu title")
-                        loadedChapters++
-                        continue
+                        Log.d("ChapterViewModel", "📘 Bắt đầu xử lý Chapter: id=$chapterId, title=$title")
+
+                        // Lấy lessons cho chapter này
+                        val lessonDocuments = db.collection("chapters").document(chapterId)
+                            .collection("lessons").get().await().documents
+                        Log.d("ChapterViewModel", "➡️ Đã fetch ${lessonDocuments.size} lessons cho chapter [$chapterId]")
+
+                        val lessonList = lessonDocuments.mapNotNull { lessonDoc ->
+                            // Code parse lesson của bạn đã rất tốt, chúng ta chỉ cần đặt nó vào đây
+                            // Ở đây, chúng ta chỉ lấy title, không cần lấy câu hỏi để tối ưu
+                            val lessonId = lessonDoc.id
+                            val lessonTitle = lessonDoc.getString("title") ?: return@mapNotNull null
+                            Lesson(id = lessonId, title = lessonTitle, questions = emptyList())
+                        }
+
+                        Chapter(id = chapterId, title = title, lessons = lessonList)
                     }
-
-                    Log.d("ChapterViewModel", "📘 Chapter: id=$chapterId, title=$title")
-
-                    // Fetch lessons trong subcollection
-                    db.collection("chapters")
-                        .document(chapterId)
-                        .collection("lessons")
-                        .get()
-                        .addOnSuccessListener { lessonResult ->
-                            Log.d(
-                                "ChapterViewModel",
-                                "➡️ Đã fetch ${lessonResult.size()} lessons cho chapter [$chapterId]"
-                            )
-
-                            val lessonList = lessonResult.documents.mapNotNull { lessonDoc ->
-                                try {
-                                    val lessonId = lessonDoc.id
-                                    val lessonTitle = lessonDoc.getString("title") ?: run {
-                                        Log.d(
-                                            "ChapterViewModel",
-                                            "⚠️ Lesson [$lessonId] thiếu title"
-                                        )
-                                        return@mapNotNull null
-                                    }
-
-                                    val questionsRaw = lessonDoc.get("questions") as? List<*>
-                                    if (questionsRaw == null) {
-                                        Log.d(
-                                            "ChapterViewModel",
-                                            "⚠️ Lesson [$lessonId] không có trường 'questions'"
-                                        )
-                                        return@mapNotNull null
-                                    }
-
-                                    val questionList = questionsRaw.mapNotNull { questionObj ->
-                                        val questionMap =
-                                            questionObj as? Map<*, *> ?: return@mapNotNull null
-                                        val number = (questionMap["number"] as? Long)?.toInt()
-                                        val questionText = questionMap["question"] as? String
-                                        val options = questionMap["options"] as? List<*>
-                                        val correctAnswerIndex =
-                                            (questionMap["correctAnswerIndex"] as? Long)?.toInt()
-
-                                        if (number == null || questionText == null || options == null || correctAnswerIndex == null) {
-                                            Log.d(
-                                                "ChapterViewModel",
-                                                "⚠️ Bỏ qua question không đầy đủ trong lesson [$lessonId]"
-                                            )
-                                            return@mapNotNull null
-                                        }
-
-                                        val optionStrings = options.mapNotNull { it as? String }
-                                        if (optionStrings.size != options.size) {
-                                            Log.d(
-                                                "ChapterViewModel",
-                                                "⚠️ Câu hỏi có option không hợp lệ trong lesson [$lessonId]"
-                                            )
-                                            return@mapNotNull null
-                                        }
-
-                                        Log.d(
-                                            "ChapterViewModel",
-                                            "📝 Loaded question $number in lesson [$lessonId]"
-                                        )
-
-                                        Question(
-                                            number = number,
-                                            question = questionText,
-                                            options = optionStrings,
-                                            correctAnswerIndex = correctAnswerIndex
-                                        )
-                                    }
-
-                                    Log.d(
-                                        "ChapterViewModel",
-                                        "📗 Loaded lesson: $lessonId, title=$lessonTitle, questions=${questionList.size}"
-                                    )
-
-                                    Lesson(
-                                        id = lessonId,
-                                        title = lessonTitle,
-                                        questions = questionList
-                                    )
-                                } catch (e: Exception) {
-                                    Log.e("ChapterViewModel", "❌ Lỗi khi parse lesson", e)
-                                    null
-                                }
-                            }
-
-                            chaptersList.add(
-                                Chapter(
-                                    id = chapterId,
-                                    title = title,
-                                    lessons = lessonList
-                                )
-                            )
-
-                            loadedChapters++
-                            Log.d(
-                                "ChapterViewModel",
-                                "✅ Đã load chapter [$chapterId], tổng lessons: ${lessonList.size}"
-                            )
-
-                            // Khi tất cả các chapter đã load xong
-                            if (loadedChapters == totalChapters) {
-                                _chapters.value = chaptersList
-                                Log.d(
-                                    "ChapterViewModel",
-                                    "🎉 Hoàn tất: Đã load ${chaptersList.size} chapters đầy đủ"
-                                )
-                            }
-                        }
-                        .addOnFailureListener {
-                            Log.e(
-                                "ChapterViewModel",
-                                "❌ Lỗi load lessons cho chapter [$chapterId]",
-                                it
-                            )
-                            loadedChapters++
-                        }
                 }
+
+                // 3. Chờ tất cả các job tải lesson hoàn thành và lọc ra những chapter hợp lệ
+                val chaptersList = chapterJobs.awaitAll().filterNotNull()
+
+                // 4. SẮP XẾP DANH SÁCH SAU KHI ĐÃ CÓ TẤT CẢ DỮ LIỆU
+                val sortedChapters = chaptersList.sortedBy { chapter ->
+                    extractNumberFromTitle(chapter.title)
+                }
+                Log.d("ChapterViewModel", "🎉 Hoàn tất: Đã load và sắp xếp ${sortedChapters.size} chapters")
+
+                // 5. Cập nhật State
+                _chapters.value = sortedChapters
+
+            } catch (e: Exception) {
+                Log.e("ChapterViewModel", "❌ Lỗi trong quá trình fetch và xử lý chapters", e)
             }
-            .addOnFailureListener { exception ->
-                Log.e("ChapterViewModel", "❌ Lỗi fetch chapters", exception)
-            }
+        }
+    }
+    private fun extractNumberFromTitle(title: String): Int {
+        // Sử dụng biểu thức chính quy (Regex) để tìm số đầu tiên trong chuỗi
+        return Regex("""\d+""").find(title)?.value?.toIntOrNull() ?: Int.MAX_VALUE
     }
 }
 
