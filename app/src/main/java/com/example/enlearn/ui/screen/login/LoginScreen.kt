@@ -1,7 +1,6 @@
 package com.example.enlearn.ui.screen.login
 
 import android.app.Activity
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +43,7 @@ import com.example.enlearn.ui.components.InputField
 import com.example.enlearn.ui.components.LoginBtnThird
 import com.example.enlearn.ui.components.NotiLoginEr
 import com.example.enlearn.ui.viewModel.LoginViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -50,21 +52,31 @@ fun LoginScreen(
     navController: NavController
 ) {
     val viewModel: LoginViewModel = viewModel()
-    val user by viewModel.user.observeAsState()
-    val error by viewModel.error.observeAsState()
+    val isLoginSuccessful by viewModel.loginSuccess.observeAsState(initial = false)
+    val errorMessage by viewModel.error.observeAsState()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var hasNavigated by remember { mutableStateOf(false) }
     var msg by remember { mutableStateOf("") }
     var loginSuccessMsg by remember { mutableStateOf("") }
 
-    LaunchedEffect(user) {
-        if (user != null && !hasNavigated) {
-            loginSuccessMsg = "Đăng nhập thành công"
-            hasNavigated = true
-            Log.d("LoginScreen", "Login successful, navigating to home")
-            kotlinx.coroutines.delay(2000)
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(isLoginSuccessful, errorMessage) {
+        if (isLoginSuccessful) {
+            scope.launch {
+                snackbarHostState.showSnackbar("Đăng nhập thành công!")
+            }
             onLoginSuccess()
+        }
+
+        errorMessage?.let { message ->
+            scope.launch {
+                // Xử lý lỗi: tránh hiển thị lại lỗi cũ
+                // Bạn có thể thêm một hàm trong ViewModel để "tiêu thụ" lỗi sau khi đã hiển thị
+                snackbarHostState.showSnackbar(message)
+            }
         }
     }
 
@@ -138,7 +150,7 @@ fun LoginScreen(
             val displayMsg = when {
                 msg.isNotBlank() -> msg
                 !loginSuccessMsg.isNullOrBlank() -> loginSuccessMsg
-                !error.isNullOrBlank() -> error!!
+                !errorMessage.isNullOrBlank() -> errorMessage!!
                 else -> ""
             }
             NotiLoginEr(displayMsg)

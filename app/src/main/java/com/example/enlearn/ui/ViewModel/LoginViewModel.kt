@@ -13,73 +13,81 @@ import com.example.enlearn.utils.AuthResultCallback
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-
+import com.google.firebase.firestore.SetOptions
 
 class LoginViewModel : ViewModel() {
 
-    // Firebase Authentication
-    private val firebaseAuth = FirebaseAuth.getInstance()
-    private val googleAuthRepository = GoogleAuthRepository(firebaseAuth)
     private val authRepository = AuthRepository()
-
-    // Firestore lưu trữ dữ liệu người dùng
+    private val googleAuthRepository = GoogleAuthRepository(FirebaseAuth.getInstance())
     private val firestore = FirebaseFirestore.getInstance()
+    private val TAG = "LoginViewModel"
 
-    private val _user = MutableLiveData<FirebaseUser?>()
-    val user: LiveData<FirebaseUser?> = _user
-
-    private val _appUser = MutableLiveData<User>()
-    val appUser: LiveData<User> = _appUser
+    // LiveData để thông báo cho UI về trạng thái, chỉ UI quan tâm _appUser
+    private val _appUser = MutableLiveData<User?>()
+    val appUser: LiveData<User?> = _appUser
 
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _loginSuccess = MutableLiveData<Boolean>()
+    val loginSuccess: LiveData<Boolean> = _loginSuccess
+
     private val _startGoogleSignIn = MutableLiveData<Unit>()
     val startGoogleSignIn: LiveData<Unit> = _startGoogleSignIn
 
-    // Login
+    init {
+        // Kiểm tra nếu người dùng đã đăng nhập từ trước
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            loadUserFromFirestore(currentUser.uid)
+        }
+    }
+
+    // --- CÁC HÀM XỬ LÝ CHÍNH ---
+
     fun login(email: String, password: String) {
+        _isLoading.value = true
         authRepository.login(email, password, object : AuthResultCallback {
-            override fun onSuccess(user: FirebaseUser?) {
-                if (user != null) {
-                    val appUser = firebaseUserToAppUser(user)
-                    _user.postValue(user)
-                    _appUser.postValue(appUser)
-                    saveUserToFirestore(appUser)  // Lưu vào Firestore sau đăng nhập
-                    loadUserFromFirestore(user.uid)
+            override fun onSuccess(firebaseUser: FirebaseUser?) {
+                if (firebaseUser != null) {
+                    // Sau khi login thành công, tải thông tin từ Firestore
+                    loadUserFromFirestore(firebaseUser.uid)
                 } else {
-                    _error.postValue("Đăng nhập thất bại: user null")
+                    handleLoginFailure("Login failed: FirebaseUser is null.")
                 }
             }
 
             override fun onFailure(errorMessage: String) {
-                _error.postValue(errorMessage)
+                handleLoginFailure(errorMessage)
             }
         })
     }
 
-    //Sign up
     fun register(firstName: String, lastName: String, email: String, password: String) {
+        _isLoading.value = true
         authRepository.register(email, password, firstName, lastName, object : AuthResultCallback {
-            override fun onSuccess(user: FirebaseUser?) {
-                val currentUser = firebaseAuth.currentUser
-                if (currentUser == null) {
-                    _error.postValue("Đăng ký thành công nhưng không lấy được user hiện tại")
-                    return
+            override fun onSuccess(firebaseUser: FirebaseUser?) {
+                if (firebaseUser != null) {
+                    // Tạo đối tượng User của bạn và lưu nó
+                    val newUser = User(
+                        id = firebaseUser.uid,
+                        email = email,
+                        firstName = firstName,
+                        lastName = lastName,
+                        fullName = "$firstName $lastName".trim(),
+                        isGoogleUser = false
+                    )
+                    saveUserToFirestore(newUser, true)
+                } else {
+                    handleLoginFailure("Registration failed: FirebaseUser is null.")
                 }
-
-                val appUser = firebaseUserToAppUser(currentUser).copy(
-                    firstName = firstName,
-                    lastName = lastName,
-                    fullName = "$lastName $firstName"
-                )
-                _user.postValue(currentUser)
-                _appUser.postValue(appUser)
-                saveUserToFirestore(appUser)  // Lưu vào Firestore sau đăng ký
             }
 
             override fun onFailure(errorMessage: String) {
-                _error.postValue(errorMessage)
+                handleLoginFailure(errorMessage)
             }
         })
     }
@@ -88,161 +96,97 @@ class LoginViewModel : ViewModel() {
         _startGoogleSignIn.value = Unit
     }
 
-    // Trả về Intent Google Sign-In đúng
     fun getGoogleSignInIntent(context: Context): Intent {
         return googleAuthRepository.getGoogleSignInClient(context).signInIntent
     }
 
-    // Google Login
     fun loginWithGoogle(data: Intent?) {
+        _isLoading.value = true
         googleAuthRepository.handleSignInResult(
             data,
-            onSuccess = {
-                val firebaseUser = googleAuthRepository.getCurrentUser()
-                val appUser = firebaseUserToAppUser(firebaseUser)
-                _user.value = firebaseUser
-                _appUser.value = appUser
-                saveUserToFirestore(appUser)
+            onSuccess = { firebaseUser -> // firebaseUser ở đây là FirebaseUser?
+                // SỬA Ở ĐÂY: Thêm kiểm tra null
                 if (firebaseUser != null) {
-                    loadUserFromFirestore(firebaseUser.uid)
+                    // Nếu không null, gọi hàm checkAndSave
+                    checkAndSaveGoogleUser(firebaseUser)
+                } else {
+                    // Nếu null, xử lý lỗi
+                    handleLoginFailure("Google Sign-In failed: User is null.")
                 }
             },
             onError = { e ->
-                _error.value = e.message ?: "Unknown error"
+                handleLoginFailure(e.message ?: "Google Sign-In failed.")
             }
         )
     }
 
-    // Logout
     fun logout(context: Context) {
-        // Đăng xuất Firebase
-        firebaseAuth.signOut()
-
-        // Đăng xuất Google
+        FirebaseAuth.getInstance().signOut()
         googleAuthRepository.getGoogleSignInClient(context).signOut()
-
-        // Cập nhật trạng thái user
-        _user.value = null
+        _appUser.value = null
+        _loginSuccess.value = false
     }
 
+    // --- CÁC HÀM HỖ TRỢ ---
 
-    fun firebaseUserToAppUser(firebaseUser: FirebaseUser?): User {
-        if (firebaseUser == null) return User()
-
-        val isGoogle = firebaseUser.providerData.any { it.providerId == "google.com" }
-        val fullName = firebaseUser.displayName ?: ""
-        val email = firebaseUser.email ?: ""
-        val uid = firebaseUser.uid
-
-        var firstName: String = ""
-        var lastName: String = ""
-
-        if (isGoogle) {
-            val nameParts = fullName.trim().split(" ")
-            if (nameParts.size >= 2) {
-                lastName = nameParts.first()
-                firstName = nameParts.drop(1).joinToString(" ")
-            } else {
-                firstName = fullName // fallback
-            }
-        }
-
-        return User(
-            id = uid,
-            email = email,
-            fullName = fullName,
-            firstName = firstName,
-            lastName = lastName,
-            isGoogleUser = isGoogle
-        )
-    }
-
-    // Lưu lại dữ liệu tài khoản người dùng
-    private fun saveUserToFirestore(user: User) {
-        if (user.id.isBlank()) {
-            _error.postValue("User id is blank, không lưu được user")
-            return
-        }
-
-        val userRef = firestore.collection("users").document(user.id)
-
-        userRef.get().addOnSuccessListener { document ->
-            if (!document.exists()) {
-                val data = hashMapOf(
-                    "id" to user.id,
-                    "email" to user.email,
-                    "fullName" to user.fullName,
-                    "isGoogleUser" to user.isGoogleUser,
-                    "firstName" to user.firstName,
-                    "lastName" to user.lastName,
-                    "progress" to user.progress.map {
-                        mapOf(
-                            "chapterId" to it.chapterId,
-                            "lessonId" to it.lessonId,
-                            "completed" to it.completed
-                        )
-                    }
-                )
-
-                userRef.set(data)
-                    .addOnSuccessListener {
-                        println("Lưu user mới lên Firestore thành công: ${user.id}")
-                    }
-                    .addOnFailureListener { e ->
-                        _error.postValue("Lỗi lưu dữ liệu người dùng: ${e.message}")
-                    }
-            } else {
-                println("Người dùng đã tồn tại trong Firestore: ${user.id}")
-            }
-        }.addOnFailureListener { e ->
-            _error.postValue("Lỗi kiểm tra người dùng Firestore: ${e.message}")
-        }
-
-    }
-
-    fun loadUserFromFirestore(uid: String) {
-        val TAG = "LoadUser"
-
-        Log.d(TAG, "Bắt đầu tải user từ Firestore với uid: $uid")
-
-        firestore.collection("users").document(uid)
-            .get()
+    private fun loadUserFromFirestore(uid: String) {
+        firestore.collection("users").document(uid).get()
             .addOnSuccessListener { document ->
-                Log.d(TAG, "Kết nối Firestore thành công.")
-
                 if (document.exists()) {
-                    Log.d(TAG, "Tìm thấy document user: ${document.data}")
-
-                    val user = User(
-                        id = document.id,
-                        email = document.getString("email") ?: "",
-                        fullName = document.getString("fullName") ?: "",
-                        firstName = document.getString("firstName") ?: "",
-                        lastName = document.getString("lastName") ?: "",
-                        isGoogleUser = document.getBoolean("isGoogleUser") ?: false
-                    )
-
-                    Log.d(TAG, "Tạo đối tượng User: $user")
-                    Log.d("ProfileDebug", "User loaded: ${user.fullName}, Email: ${user.email}")
-
-
-                    _appUser.value = user
+                    val user = document.toObject(User::class.java)
+                    _appUser.postValue(user)
+                    _loginSuccess.postValue(true)
+                    Log.d(TAG, "User data loaded successfully: ${user?.fullName}")
                 } else {
-                    Log.e(TAG, "Không tìm thấy người dùng trong Firestore với UID: $uid")
-                    _error.value = "Người dùng không tồn tại trong Firestore"
+                    // Trường hợp này ít xảy ra nếu saveUser logic đúng
+                    handleLoginFailure("User not found in Firestore.")
                 }
+                _isLoading.postValue(false)
             }
             .addOnFailureListener { e ->
-                Log.e(TAG, "Lỗi khi load user từ Firestore: ${e.message}", e)
-                _error.value = "Lỗi khi load user: ${e.message}"
+                handleLoginFailure("Failed to load user data: ${e.message}")
             }
     }
 
-    init {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        currentUser?.uid?.let {
-            loadUserFromFirestore(it)
+    private fun saveUserToFirestore(user: User, isNewUser: Boolean) {
+        firestore.collection("users").document(user.id)
+            // SỬA Ở ĐÂY: Dùng SetOptions.merge()
+            .set(user, SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d(TAG, "User data saved to Firestore successfully.")
+                loadUserFromFirestore(user.id)
+            }
+            .addOnFailureListener { e ->
+                handleLoginFailure("Failed to save user data: ${e.message}")
+            }
+    }
+
+    private fun checkAndSaveGoogleUser(firebaseUser: FirebaseUser) {
+        val userRef = firestore.collection("users").document(firebaseUser.uid)
+        userRef.get().addOnSuccessListener { document ->
+            if (!document.exists()) {
+                // Người dùng Google mới, tạo và lưu
+                val nameParts = firebaseUser.displayName?.trim()?.split(" ") ?: listOf()
+                val newUser = User(
+                    id = firebaseUser.uid,
+                    email = firebaseUser.email ?: "",
+                    fullName = firebaseUser.displayName ?: "",
+                    firstName = if (nameParts.size > 1) nameParts.drop(1).joinToString(" ") else firebaseUser.displayName ?: "",
+                    lastName = if (nameParts.isNotEmpty()) nameParts.first() else "",
+                    isGoogleUser = true
+                )
+                saveUserToFirestore(newUser, true)
+            } else {
+                // Người dùng Google đã tồn tại, chỉ cần tải dữ liệu của họ
+                loadUserFromFirestore(firebaseUser.uid)
+            }
         }
     }
-}
 
+    private fun handleLoginFailure(errorMessage: String) {
+        Log.e(TAG, errorMessage)
+        _error.postValue(errorMessage)
+        _isLoading.postValue(false)
+        _loginSuccess.postValue(false)
+    }
+}

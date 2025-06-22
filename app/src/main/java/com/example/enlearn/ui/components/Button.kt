@@ -18,7 +18,8 @@ import androidx.compose.ui.unit.sp
 fun AppButton(
     onClick: () -> Unit,
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     Button(
         onClick = onClick,

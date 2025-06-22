@@ -17,3 +17,5 @@ val PurpleLight = Color(0xFF8A5FF1)
 val GreyBackground = Color(0xFFF4F4F4)
 val GreyBorder = Color(0xFFE0E0E0)
 val BlueAction = Color(0xFF5B7BFE)
+
+val BlueSelection = Color(0xFFE3F2FD)

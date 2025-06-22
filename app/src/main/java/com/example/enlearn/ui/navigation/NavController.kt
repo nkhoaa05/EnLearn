@@ -1,6 +1,8 @@
 package com.example.enlearn.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -10,6 +12,7 @@ import androidx.navigation.navArgument
 import com.example.enlearn.auth.AuthStateManager
 import com.example.enlearn.presentation.home.MainScreen
 import com.example.enlearn.ui.ViewModel.MultipleChoice.MultipleChoiceViewModelFactory
+import com.example.enlearn.ui.screen.MultipleChoiceQuestion.LearningTipScreen
 import com.example.enlearn.ui.screen.MultipleChoiceQuestion.LessonCompletedScreen
 import com.example.enlearn.ui.screen.MultipleChoiceQuestion.MultipleChoiceScreen
 import com.example.enlearn.ui.screen.intro.OnboardingScreen1
@@ -87,16 +90,38 @@ fun AppNavGraph() {
             )
         }
         // Main
-        composable("home") {
-            // 1. Truyền hành động `onLessonClicked` vào MainScreen
+        composable("home") { backStackEntry -> // <-- Phải nhận NavBackStackEntry
+
+            // NHẬN TÍN HIỆU:
+            // Lắng nghe giá trị từ SavedStateHandle dưới dạng một State.
+            val shouldRefresh by backStackEntry.savedStateHandle.getStateFlow("refresh_home", false).collectAsState()
+
             MainScreen(
-                onLessonClicked = { chapterId, lessonId ->
-                    // 2. Khi hành động này được gọi, thực hiện điều hướng
-                    navController.navigate("lesson/$chapterId/$lessonId")
+                mainNavController = navController,
+                shouldRefreshHome = shouldRefresh, // <-- Truyền tín hiệu xuống
+                onRefreshDone = { // <-- Truyền một hành động để reset tín hiệu
+                    backStackEntry.savedStateHandle.set("refresh_home", false)
                 }
             )
         }
 
+        composable(
+            route = "learning_tip/{chapterId}/{lessonId}",
+            arguments = listOf(
+                navArgument("chapterId") { type = NavType.StringType },
+                navArgument("lessonId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val chapterId = backStackEntry.arguments?.getString("chapterId") ?: ""
+            val lessonId = backStackEntry.arguments?.getString("lessonId") ?: ""
+            LearningTipScreen(
+                onGotItClicked = {
+                    // Khi nhấn "Got it!", đi đến màn hình câu hỏi
+                    navController.navigate("lesson/$chapterId/$lessonId")
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
         //Navigation MutipleChoiceQuestion
         composable(
             route = "lesson/{chapterId}/{lessonId}",
@@ -115,10 +140,12 @@ fun AppNavGraph() {
             MultipleChoiceScreen(
                 viewModel = viewModel,
                 // SỬA Ở ĐÂY: Đặt tên rõ ràng cho các tham số
-                onNavigateToCompleted = { score, totalQuestions ->
-                    // Bây giờ bạn có thể dùng `score` và `totalQuestions`
-                    navController.navigate("completed/$score/$totalQuestions") {
-                        popUpTo("lesson_list")
+                onNavigateToCompleted = { score, totalQuestions, lessonTitle ->
+                    val encodedTitle = java.net.URLEncoder.encode(lessonTitle, "UTF-8")
+                    navController.navigate("completed/$score/$totalQuestions/$encodedTitle") {
+                        popUpTo("lesson/$chapterId/$lessonId") {
+                            inclusive = true
+                        }
                     }
                 },
                 onBack = { navController.popBackStack() }
@@ -127,19 +154,30 @@ fun AppNavGraph() {
 
         // Màn hình hoàn thành bài học
         composable(
-            route = "completed/{score}/{totalQuestions}",
+            route = "completed/{score}/{totalQuestions}/{lessonTitle}",
             arguments = listOf(
                 navArgument("score") { type = NavType.IntType },
-                navArgument("totalQuestions") { type = NavType.IntType }
+                navArgument("totalQuestions") { type = NavType.IntType },
+                navArgument("lessonTitle") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val score = backStackEntry.arguments?.getInt("score") ?: 0
             val totalQuestions = backStackEntry.arguments?.getInt("totalQuestions") ?: 0
+            val lessonTitle = backStackEntry.arguments?.getString("lessonTitle")?.let {
+                java.net.URLDecoder.decode(it, "UTF-8")
+            } ?: "the lesson"
             LessonCompletedScreen(
                 score = score,
                 totalQuestions = totalQuestions,
+                lessonTitle = lessonTitle,
                 onBackToHome = {
-                    navController.popBackStack() // Quay lại màn hình home
+                    // GỬI TÍN HIỆU:
+                    // 1. Lấy ra màn hình 'home' từ back stack.
+                    // 2. Đặt một giá trị (key="refresh_home", value=true) vào SavedStateHandle của nó.
+                    navController.getBackStackEntry("home").savedStateHandle.set("refresh_home", true)
+
+                    // SAU ĐÓ MỚI QUAY LẠI
+                    navController.popBackStack("home", inclusive = false)
                 }
             )
         }
