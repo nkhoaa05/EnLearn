@@ -2,6 +2,8 @@ package com.example.enlearn.data
 
 import com.example.enlearn.utils.AuthResultCallback
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.userProfileChangeRequest
 
@@ -15,7 +17,26 @@ class AuthRepository {
                 if (task.isSuccessful) {
                     callback.onSuccess(firebaseAuth.currentUser)
                 } else {
-                    callback.onFailure(task.exception?.message ?: "Đăng nhập thất bại")
+                    val errorMessage = when (val exception = task.exception) {
+                        is FirebaseAuthInvalidCredentialsException -> {
+                            when (exception.errorCode) {
+                                "ERROR_INVALID_EMAIL" -> "Email không đúng định dạng"
+                                "ERROR_WRONG_PASSWORD" -> "Sai mật khẩu"
+                                else -> "Thông tin đăng nhập không hợp lệ"
+                            }
+                        }
+
+                        is FirebaseAuthInvalidUserException -> {
+                            when (exception.errorCode) {
+                                "ERROR_USER_NOT_FOUND" -> "Người dùng không tồn tại"
+                                "ERROR_USER_DISABLED" -> "Tài khoản đã bị vô hiệu hóa"
+                                else -> "Tài khoản không hợp lệ"
+                            }
+                        }
+
+                        else -> exception?.localizedMessage ?: "Đăng nhập thất bại"
+                    }
+                    callback.onFailure(errorMessage)
                 }
             }
     }
