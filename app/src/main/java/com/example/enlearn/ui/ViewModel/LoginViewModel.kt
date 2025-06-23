@@ -22,7 +22,6 @@ class LoginViewModel : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
     private val TAG = "LoginViewModel"
 
-    // LiveData để thông báo cho UI về trạng thái, chỉ UI quan tâm _appUser
     private val _appUser = MutableLiveData<User?>()
     val appUser: LiveData<User?> = _appUser
 
@@ -45,8 +44,6 @@ class LoginViewModel : ViewModel() {
             loadUserFromFirestore(currentUser.uid)
         }
     }
-
-    // --- CÁC HÀM XỬ LÝ CHÍNH ---
 
     fun login(email: String, password: String) {
         _isLoading.value = true
@@ -71,7 +68,7 @@ class LoginViewModel : ViewModel() {
         authRepository.register(email, password, firstName, lastName, object : AuthResultCallback {
             override fun onSuccess(firebaseUser: FirebaseUser?) {
                 if (firebaseUser != null) {
-                    // Tạo đối tượng User của bạn và lưu nó
+                    // Tạo đối tượng và lưu User
                     val newUser = User(
                         id = firebaseUser.uid,
                         email = email,
@@ -104,8 +101,7 @@ class LoginViewModel : ViewModel() {
         _isLoading.value = true
         googleAuthRepository.handleSignInResult(
             data,
-            onSuccess = { firebaseUser -> // firebaseUser ở đây là FirebaseUser?
-                // SỬA Ở ĐÂY: Thêm kiểm tra null
+            onSuccess = { firebaseUser ->
                 if (firebaseUser != null) {
                     // Nếu không null, gọi hàm checkAndSave
                     checkAndSaveGoogleUser(firebaseUser)
@@ -127,8 +123,6 @@ class LoginViewModel : ViewModel() {
         _loginSuccess.value = false
     }
 
-    // --- CÁC HÀM HỖ TRỢ ---
-
     private fun loadUserFromFirestore(uid: String) {
         firestore.collection("users").document(uid).get()
             .addOnSuccessListener { document ->
@@ -144,7 +138,6 @@ class LoginViewModel : ViewModel() {
                         _loginSuccess.postValue(true)
                     }
                 } else {
-                    // Trường hợp này ít xảy ra nếu saveUser logic đúng
                     handleLoginFailure("User not found in Firestore.")
                 }
                 _isLoading.postValue(false)
@@ -156,7 +149,6 @@ class LoginViewModel : ViewModel() {
 
     private fun saveUserToFirestore(user: User, isNewUser: Boolean) {
         firestore.collection("users").document(user.id)
-            // SỬA Ở ĐÂY: Dùng SetOptions.merge()
             .set(user, SetOptions.merge())
             .addOnSuccessListener {
                 Log.d(TAG, "User data saved to Firestore successfully.")

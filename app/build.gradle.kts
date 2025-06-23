@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    // Đặt plugin google-services ở cuối là một thói quen tốt
     id("com.google.gms.google-services")
 }
 

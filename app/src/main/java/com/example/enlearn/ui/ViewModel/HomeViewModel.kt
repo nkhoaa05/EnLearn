@@ -16,27 +16,20 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-// --- CÁC LỚP ĐẠI DIỆN CHO TRẠNG THÁI VÀ ITEM TRÊN UI ---
-
-// Sealed interface để biểu diễn các loại item khác nhau trong LazyColumn
 sealed interface HomeListItem {
-    // Dùng object cho các item không chứa dữ liệu để tiết kiệm bộ nhớ
     object ContinueLearningHeader : HomeListItem
     object AllLessonLearnedHeader : HomeListItem
     data class LessonItem(val lesson: Lesson) : HomeListItem
     data class EmptyState(val message: String) : HomeListItem
 }
 
-// Data class cho trạng thái của toàn bộ màn hình Home
 data class HomeUiState(
     val user: User? = null,
-    val homeListItems: List<HomeListItem> = emptyList(), // Chỉ có 1 danh sách duy nhất cho UI
+    val homeListItems: List<HomeListItem> = emptyList(),
     val isLoading: Boolean = true,
     val error: String? = null
 )
 
-
-// --- VIEWMODEL CHÍNH ---
 
 class HomeViewModel : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
@@ -47,11 +40,9 @@ class HomeViewModel : ViewModel() {
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
-        // Tải dữ liệu lần đầu khi ViewModel được tạo
         refreshData()
     }
 
-    // Hàm public để UI có thể gọi và làm mới dữ liệu
     fun refreshData() {
         viewModelScope.launch {
             Log.d(TAG, "Refreshing data...")
@@ -82,7 +73,6 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    // --- CÁC HÀM PRIVATE HỖ TRỢ ---
 
     private suspend fun fetchCurrentUser(): User? {
         val userId = auth.currentUser?.uid ?: return null
@@ -103,7 +93,6 @@ class HomeViewModel : ViewModel() {
                 for (lessonDoc in lessonsSnapshot.documents) {
                     val lesson = lessonDoc.toObject(Lesson::class.java)
                     if (lesson != null) {
-                        // SỬ DỤNG KEY KẾT HỢP ĐỂ ĐẢM BẢO TÍNH DUY NHẤT
                         val compositeKey = "${chapterDoc.id}-${lessonDoc.id}"
                         lessonsMap[compositeKey] = lesson.copy(id = lessonDoc.id, chapterId = chapterDoc.id)
                     }

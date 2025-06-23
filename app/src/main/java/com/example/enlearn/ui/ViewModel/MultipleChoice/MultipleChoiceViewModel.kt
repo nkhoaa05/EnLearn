@@ -16,10 +16,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 
-// Enum để quản lý trạng thái của câu trả lời
 enum class AnswerState { UNSELECTED, CORRECT, INCORRECT }
 
-// Lớp trạng thái cho toàn bộ UI, rất quan trọng!
 data class QuizUiState(
     val isLoading: Boolean = true,
     val error: String? = null,
@@ -32,7 +30,6 @@ data class QuizUiState(
     val isLessonFinished: Boolean = false,
     val score: Int = 0
 ) {
-    // Helper để lấy câu hỏi hiện tại một cách an toàn
     val currentQuestion: Question?
         get() = questions.getOrNull(currentQuestionIndex)
 }
@@ -51,7 +48,6 @@ class MultipleChoiceViewModel(
     private val TAG2 = "ViewModelLifecycle"
 
     init {
-        // Log để kiểm tra xem ID có được truyền vào đúng không
         Log.d(TAG, "[ID: $instanceId] --- ViewModel INITIALIZED ---")
         Log.d(TAG, "[ID: $instanceId] Chapter ID: $chapterId")
         Log.d(TAG, "[ID: $instanceId] Lesson ID: $lessonId")
