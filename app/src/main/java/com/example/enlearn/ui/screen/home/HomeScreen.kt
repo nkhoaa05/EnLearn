@@ -1,6 +1,5 @@
 package com.example.enlearn.presentation.home
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,7 +29,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,6 +42,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -54,6 +56,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.enlearn.R
 import com.example.enlearn.presentation.profile.ProfileScreen
 import com.example.enlearn.ui.screen.home.LessonScreen
+import com.example.enlearn.ui.viewModel.HomeListItem
 import com.example.enlearn.ui.viewModel.HomeViewModel
 
 
@@ -72,8 +75,6 @@ sealed class BottomNavScreen(
 // Tên hàm này là `MainScreen` vì nó đại diện cho toàn bộ giao diện chính sau khi đăng nhập.
 @Composable
 fun MainScreen(mainNavController: NavHostController,
-               shouldRefreshHome: Boolean, // Nhận tín hiệu
-               onRefreshDone: () -> Unit   // Nhận hành động reset
 ) {
     val bottomNavController = rememberNavController()
 
@@ -91,8 +92,7 @@ fun MainScreen(mainNavController: NavHostController,
                     onLessonClicked = { chapterId, lessonId ->
                         mainNavController.navigate("lesson/$chapterId/$lessonId")
                     },
-                    shouldRefresh = shouldRefreshHome,
-                    onRefreshDone = onRefreshDone
+
                 )
             }
             composable(BottomNavScreen.Task.route) {
@@ -144,57 +144,79 @@ private fun BottomNavigationBar(navController: NavHostController) {
 
 // 4. ĐỔI TÊN HÀM `HomeScreen` CŨ THÀNH `HomeScreenContent`
 // Nó chỉ là nội dung, không phải toàn bộ màn hình.
+// trong file: presentation/home/HomeScreen.kt
+
 @Composable
 private fun HomeScreenContent(
     onLessonClicked: (chapterId: String, lessonId: String) -> Unit,
-    shouldRefresh: Boolean,
-    onRefreshDone: () -> Unit,
     homeViewModel: HomeViewModel = viewModel()
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    // THÊM KHỐI NÀY VÀO ĐÂY
-    // --------------------------------------------------
-    LaunchedEffect(shouldRefresh) {
-        // Khối này sẽ chạy lại mỗi khi giá trị của `shouldRefresh` thay đổi
-        if (shouldRefresh) {
-            Log.d("HomeScreen", "Refresh signal received, reloading data...")
-            // 1. Gọi ViewModel để tải lại dữ liệu từ đầu
-            homeViewModel.loadInitialData()
-
-            // 2. Gọi hàm callback để reset tín hiệu,
-            // tránh việc tải lại liên tục nếu recomposition xảy ra
-            onRefreshDone()
+    // Tự động làm mới dữ liệu khi người dùng quay lại màn hình này
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                // SỬA LỖI 1: Gọi đúng tên hàm public
+                homeViewModel.refreshData()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-    // --------------------------------------------------
 
-    // Phần giao diện của bạn giữ nguyên, không cần thay đổi
+    // Giao diện chính
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
     } else {
-        LazyColumn(modifier = Modifier.fillMaxSize().background(Color.White)) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+        ) {
             item { HomeHeader(userName = uiState.user?.displayName() ?: "Guest") }
-            item { Spacer(modifier = Modifier.height(24.dp)) }
-            item { SectionHeader(title = "Continue Learning") }
-            if (uiState.continuingLessons.isEmpty()) {
-                item { EmptyStateText(text = "Start a new lesson to see your progress here!") }
-            } else {
-                items(uiState.continuingLessons) { lesson ->
-                    LessonCard(title = lesson.title, onClick = { onLessonClicked(lesson.chapterId, lesson.id) })
+
+            // Lặp qua danh sách item duy nhất
+            items(
+                items = uiState.homeListItems,
+                // SỬA LỖI 2 & 3: Cung cấp key duy nhất cho TẤT CẢ các loại item
+                key = { item ->
+                    when (item) {
+                        is HomeListItem.ContinueLearningHeader -> "header_continuing"
+                        is HomeListItem.AllLessonLearnedHeader -> "header_completed"
+                        is HomeListItem.LessonItem -> "lesson-${item.lesson.chapterId}-${item.lesson.id}"
+                        is HomeListItem.EmptyState -> "empty-${item.message}"
+                    }
+                },
+                contentType = { item -> item::class.java.simpleName }
+            ) { item ->
+                // SỬA LỖI 2 & 3: Dùng when để vẽ Composable tương ứng cho TẤT CẢ các loại item
+                when (item) {
+                    is HomeListItem.ContinueLearningHeader -> {
+                        Spacer(modifier = Modifier.height(24.dp))
+                        SectionHeader(title = "Continue Learning")
+                    }
+                    is HomeListItem.AllLessonLearnedHeader -> {
+                        Spacer(modifier = Modifier.height(40.dp))
+                        SectionHeader(title = "All Lesson Learned")
+                    }
+                    is HomeListItem.LessonItem -> {
+                        LessonCard(
+                            title = item.lesson.title,
+                            onClick = { onLessonClicked(item.lesson.chapterId, item.lesson.id) }
+                        )
+                    }
+                    is HomeListItem.EmptyState -> {
+                        EmptyStateText(text = item.message)
+                    }
                 }
             }
-            item { Spacer(modifier = Modifier.height(40.dp)) }
-            item { SectionHeader(title = "All Lesson Learned") }
-            if (uiState.completedLessons.isEmpty()) {
-                item { EmptyStateText(text = "No lessons completed yet. Keep going!") }
-            } else {
-                items(uiState.completedLessons) { lesson ->
-                    LessonCard(title = lesson.title, onClick = { onLessonClicked(lesson.chapterId, lesson.id) })
-                }
-            }
+
             item { Spacer(modifier = Modifier.height(80.dp)) }
         }
     }

@@ -38,19 +38,26 @@ data class QuizUiState(
 }
 
 class MultipleChoiceViewModel(
-    private val chapterId: String,
-    private val lessonId: String
+    val chapterId: String,
+    val lessonId: String
 
 ) : ViewModel() {
-
+    private val instanceId = System.currentTimeMillis() % 10000
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
     private val _uiState = MutableStateFlow(QuizUiState())
     val uiState: StateFlow<QuizUiState> = _uiState.asStateFlow()
+    private val TAG = "QuizVM_Debug"
+    private val TAG2 = "ViewModelLifecycle"
 
     init {
         // Log để kiểm tra xem ID có được truyền vào đúng không
-        Log.d("QuizVM", "Initializing for chapterId: $chapterId, lessonId: $lessonId")
+        Log.d(TAG, "[ID: $instanceId] --- ViewModel INITIALIZED ---")
+        Log.d(TAG, "[ID: $instanceId] Chapter ID: $chapterId")
+        Log.d(TAG, "[ID: $instanceId] Lesson ID: $lessonId")
+        Log.d(TAG, "--- ViewModel INIT ---")
+        Log.d(TAG2, "Instance ID: @${System.identityHashCode(this)}")
+        Log.d(TAG2, "Content: chapterId=$chapterId, lessonId=$lessonId")
         fetchQuestionsForLesson()
     }
 
@@ -117,36 +124,44 @@ class MultipleChoiceViewModel(
     fun saveCurrentProgress() {
         // Chỉ lưu khi đã trả lời ít nhất 1 câu, tránh lưu khi vừa vào đã thoát
         if (_uiState.value.currentQuestionIndex >= 0 && _uiState.value.questions.isNotEmpty()) {
-            saveProgress(LessonStatus.IN_PROGRESS)
+            saveProgress(LessonStatus.COMPLETED, this.chapterId, this.lessonId)
         }
     }
 
     // Hàm lưu progress chung
-    fun saveProgress(status: LessonStatus) {
-        val userId = auth.currentUser?.uid ?: return
-        val userRef = db.collection("users").document(userId)
+    fun saveProgress(status: LessonStatus, chapterId: String, lessonId: String) {
+        Log.d(TAG, "[ID: $instanceId] --- saveProgress CALLED ---")
+        Log.d(TAG, "[ID: $instanceId] Status: $status")
+        Log.d(TAG, "[ID: $instanceId] Received Chapter ID: $chapterId")
+        Log.d(TAG, "Attempting to save progress. Status: $status, Chapter: $chapterId, Lesson: $lessonId")
+        Log.d(TAG2, "--- proceedToNextQuestion CALLED ---")
+        Log.d(TAG2, "Instance ID: @${System.identityHashCode(this)}")
+        Log.d(TAG2, "Content: chapterId=$chapterId, lessonId=$lessonId")
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            Log.e(TAG, "Cannot save progress, user is NULL.")
+            return
+        }
 
         val progressToSave = Progress(
-            chapterId = this.chapterId,
-            lessonId = this.lessonId,
+            chapterId = chapterId,
+            lessonId = lessonId,
             status = status.name,
             score = _uiState.value.score,
             totalQuestions = _uiState.value.questions.size,
             lastAccessed = Date()
         )
 
+        Log.d(TAG, "Progress object to save: $progressToSave")
+        val userRef = db.collection("users").document(userId)
+
         db.runTransaction { transaction ->
-            // 1. ĐỌC: Lấy snapshot của document user
             val snapshot = transaction.get(userRef)
             if (!snapshot.exists()) {
-                Log.e("QuizVM", "User document does not exist, cannot save progress.")
-                return@runTransaction // Thoát khỏi transaction
+                throw Exception("User document does not exist.")
             }
 
-            // LẤY DỮ LIỆU TRỰC TIẾP TỪ TRƯỜNG "progress"
             val progressDataFromDb = snapshot.get("progress")
-
-            // Parse thủ công và an toàn từ List<Map> thành List<Progress>
             val existingProgressList = (progressDataFromDb as? List<*>)?.mapNotNull { item ->
                 (item as? Map<String, Any>)?.let { map ->
                     Progress(
@@ -158,31 +173,36 @@ class MultipleChoiceViewModel(
                         lastAccessed = (map["lastAccessed"] as? com.google.firebase.Timestamp)?.toDate()
                     )
                 }
-            }?.toMutableList() ?: mutableListOf() // Nếu null hoặc trống, tạo list mới
+            }?.toMutableList() ?: mutableListOf()
 
-            // 2. SỬA: Tìm và cập nhật/thêm mới
-            val index = existingProgressList.indexOfFirst { it.lessonId == this.lessonId }
+            val index = existingProgressList.indexOfFirst { it.chapterId == chapterId && it.lessonId == lessonId }
+
+            if (status == LessonStatus.IN_PROGRESS && index != -1 && existingProgressList[index].status == LessonStatus.COMPLETED.name) {
+                Log.d(TAG, "Lesson already completed. Skipping update to IN_PROGRESS.")
+                return@runTransaction
+            }
 
             if (index != -1) {
-                // Đã tồn tại -> cập nhật
                 existingProgressList[index] = progressToSave
             } else {
-                // Chưa tồn tại -> thêm mới
                 existingProgressList.add(progressToSave)
             }
 
-            // 3. GHI: Ghi đè lại toàn bộ mảng progress đã cập nhật
             transaction.update(userRef, "progress", existingProgressList)
 
         }.addOnSuccessListener {
-            Log.d("QuizVM", "Progress saved with status: $status")
+            Log.d(TAG, "✅ Transaction to update progress completed successfully.")
         }.addOnFailureListener { e ->
-            Log.e("QuizVM", "Failed to save progress", e)
+            Log.e(TAG, "❌ Transaction to update progress failed.", e)
         }
     }
 
     private fun onLessonCompleted() {
-        saveProgress(LessonStatus.COMPLETED)
+        Log.d(TAG2, "--- proceedToNextQuestion CALLED ---")
+        Log.d(TAG2, "Instance ID: @${System.identityHashCode(this)}")
+        Log.d(TAG2, "Content: chapterId=$chapterId, lessonId=$lessonId")
+
+        saveProgress(LessonStatus.COMPLETED, this.chapterId, this.lessonId)
         _uiState.update { it.copy(isLessonFinished = true) }
     }
 

@@ -133,10 +133,16 @@ class LoginViewModel : ViewModel() {
         firestore.collection("users").document(uid).get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
+                    val progressData = document.get("progress")
+                    Log.d("FirestoreCheck", "LoginViewModel: Raw 'progress' field from Firestore: $progressData")
+
                     val user = document.toObject(User::class.java)
-                    _appUser.postValue(user)
-                    _loginSuccess.postValue(true)
-                    Log.d(TAG, "User data loaded successfully: ${user?.fullName}")
+                    Log.d("FirestoreCheck", "LoginViewModel: Parsed User object's progress size: ${user?.progress?.size}")
+
+                    if (user != null) {
+                        _appUser.postValue(user)
+                        _loginSuccess.postValue(true)
+                    }
                 } else {
                     // Trường hợp này ít xảy ra nếu saveUser logic đúng
                     handleLoginFailure("User not found in Firestore.")

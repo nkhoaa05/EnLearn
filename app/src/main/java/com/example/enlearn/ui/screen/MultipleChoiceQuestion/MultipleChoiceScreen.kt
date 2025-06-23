@@ -1,5 +1,6 @@
 package com.example.enlearn.ui.screen.MultipleChoiceQuestion
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.example.enlearn.data.model.LessonStatus
 import com.example.enlearn.ui.theme.BlueAction
 import com.example.enlearn.ui.theme.BlueSelection
 import com.example.enlearn.ui.theme.GreyBorder
@@ -70,19 +72,25 @@ fun MultipleChoiceScreen(
 
     // Xử lý lưu tiến trình dở dang khi người dùng thoát màn hình
     DisposableEffect(lifecycleOwner) {
+        Log.d("ContinueLearning", "DisposableEffect has been set up.") // Log 1
+
         val observer = LifecycleEventObserver { _, event ->
-            // Khi màn hình bị tạm dừng (nhấn back, về home...)
             if (event == Lifecycle.Event.ON_PAUSE) {
-                // Chỉ lưu khi bài học chưa kết thúc
+                Log.d("ContinueLearning", "ON_PAUSE event detected.") // Log 2
+
                 if (!uiState.isLessonFinished) {
-                    viewModel.saveCurrentProgress()
+                    Log.d("ContinueLearning", "Lesson is not finished. Calling saveProgress...") // Log 3
+                    viewModel.saveProgress(status = LessonStatus.IN_PROGRESS,
+                        chapterId = viewModel.chapterId, // <-- Lấy từ ViewModel
+                        lessonId = viewModel.lessonId)    // <-- Lấy từ ViewModel)
+                } else {
+                    Log.d("ContinueLearning", "Lesson is already finished. Skipping save.") // Log 4
                 }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-
-        // Dọn dẹp observer khi Composable bị hủy
         onDispose {
+            Log.d("ContinueLearning", "DisposableEffect is being disposed.") // Log 5
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
@@ -219,7 +227,7 @@ private fun ResultPanel(
             AnswerState.INCORRECT -> {
                 backgroundColor = Color(0xFFE91E63)
                 title = "Wrong Answer!"
-                buttonText = "Try again"
+                buttonText = "Next"
                 buttonTextColor = Color(0xFFE91E63)
             }
             else -> {

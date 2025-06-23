@@ -98,10 +98,6 @@ fun AppNavGraph() {
 
             MainScreen(
                 mainNavController = navController,
-                shouldRefreshHome = shouldRefresh, // <-- Truyền tín hiệu xuống
-                onRefreshDone = { // <-- Truyền một hành động để reset tín hiệu
-                    backStackEntry.savedStateHandle.set("refresh_home", false)
-                }
             )
         }
 
