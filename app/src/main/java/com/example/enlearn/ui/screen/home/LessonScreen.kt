@@ -99,7 +99,7 @@ fun LessonScreen(
     }
 }
 
-// Component cho tiêu đề Chapter
+
 @Composable
 private fun ChapterHeader(title: String) {
     Text(
@@ -112,7 +112,6 @@ private fun ChapterHeader(title: String) {
     )
 }
 
-// Component cho mỗi Lesson Item
 @Composable
 private fun LessonItem(
     lesson: Lesson,
@@ -122,8 +121,8 @@ private fun LessonItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp), // Bo tròn các góc
-        color = Color(0xFFF4F4F4) // Màu xám nhạt như trong thiết kế
+        shape = RoundedCornerShape(16.dp),
+        color = Color(0xFFF4F4F4)
     ) {
         Text(
             text = lesson.title,

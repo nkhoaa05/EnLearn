@@ -19,9 +19,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -60,21 +60,19 @@ import com.example.enlearn.ui.viewModel.HomeListItem
 import com.example.enlearn.ui.viewModel.HomeViewModel
 
 
-// 1. ĐỊNH NGHĨA CÁC MÀN HÌNH CHO BOTTOM NAV
 sealed class BottomNavScreen(
     val route: String,
     val title: String,
     val icon: ImageVector
 ) {
     object Home : BottomNavScreen("home_content", "Home", Icons.Default.Home)
-    object Task : BottomNavScreen("task_content", "Task", Icons.Default.List)
+    object Task : BottomNavScreen("task_content", "Task", Icons.AutoMirrored.Filled.List)
     object Profile : BottomNavScreen("profile_content", "Profile", Icons.Default.AccountCircle)
 }
 
-// 2. COMPOSABLE CHÍNH, SẼ ĐƯỢC GỌI TỪ AppNavGraph
-// Tên hàm này là `MainScreen` vì nó đại diện cho toàn bộ giao diện chính sau khi đăng nhập.
 @Composable
-fun MainScreen(mainNavController: NavHostController,
+fun MainScreen(
+    mainNavController: NavHostController,
 ) {
     val bottomNavController = rememberNavController()
 
@@ -93,7 +91,7 @@ fun MainScreen(mainNavController: NavHostController,
                         mainNavController.navigate("lesson/$chapterId/$lessonId")
                     },
 
-                )
+                    )
             }
             composable(BottomNavScreen.Task.route) {
                 // Nội dung của tab Task
@@ -112,7 +110,6 @@ fun MainScreen(mainNavController: NavHostController,
 }
 
 
-// 3. TẠO RA BOTTOM NAVIGATION BAR
 @Composable
 private fun BottomNavigationBar(navController: NavHostController) {
     val screens = listOf(
@@ -142,10 +139,6 @@ private fun BottomNavigationBar(navController: NavHostController) {
 }
 
 
-// 4. ĐỔI TÊN HÀM `HomeScreen` CŨ THÀNH `HomeScreenContent`
-// Nó chỉ là nội dung, không phải toàn bộ màn hình.
-// trong file: presentation/home/HomeScreen.kt
-
 @Composable
 private fun HomeScreenContent(
     onLessonClicked: (chapterId: String, lessonId: String) -> Unit,
@@ -154,11 +147,9 @@ private fun HomeScreenContent(
     val uiState by homeViewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    // Tự động làm mới dữ liệu khi người dùng quay lại màn hình này
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                // SỬA LỖI 1: Gọi đúng tên hàm public
                 homeViewModel.refreshData()
             }
         }
@@ -168,7 +159,6 @@ private fun HomeScreenContent(
         }
     }
 
-    // Giao diện chính
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
@@ -181,10 +171,8 @@ private fun HomeScreenContent(
         ) {
             item { HomeHeader(userName = uiState.user?.displayName() ?: "Guest") }
 
-            // Lặp qua danh sách item duy nhất
             items(
                 items = uiState.homeListItems,
-                // SỬA LỖI 2 & 3: Cung cấp key duy nhất cho TẤT CẢ các loại item
                 key = { item ->
                     when (item) {
                         is HomeListItem.ContinueLearningHeader -> "header_continuing"
@@ -195,22 +183,24 @@ private fun HomeScreenContent(
                 },
                 contentType = { item -> item::class.java.simpleName }
             ) { item ->
-                // SỬA LỖI 2 & 3: Dùng when để vẽ Composable tương ứng cho TẤT CẢ các loại item
                 when (item) {
                     is HomeListItem.ContinueLearningHeader -> {
                         Spacer(modifier = Modifier.height(24.dp))
                         SectionHeader(title = "Continue Learning")
                     }
+
                     is HomeListItem.AllLessonLearnedHeader -> {
                         Spacer(modifier = Modifier.height(40.dp))
                         SectionHeader(title = "All Lesson Learned")
                     }
+
                     is HomeListItem.LessonItem -> {
                         LessonCard(
                             title = item.lesson.title,
                             onClick = { onLessonClicked(item.lesson.chapterId, item.lesson.id) }
                         )
                     }
+
                     is HomeListItem.EmptyState -> {
                         EmptyStateText(text = item.message)
                     }
@@ -222,7 +212,6 @@ private fun HomeScreenContent(
     }
 }
 
-// Tách Header ra để dễ quản lý
 @Composable
 private fun HomeHeader(userName: String) {
     Box(
@@ -238,7 +227,9 @@ private fun HomeHeader(userName: String) {
             Image(
                 painter = painterResource(id = R.drawable.avatar_placeholder),
                 contentDescription = "Profile Picture",
-                modifier = Modifier.size(60.dp).clip(CircleShape)
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape)
             )
             Spacer(modifier = Modifier.width(15.dp))
             Column {
@@ -258,7 +249,7 @@ private fun HomeHeader(userName: String) {
     }
 }
 
-// Sửa lại LessonCard để nhận onClick
+
 @Composable
 private fun LessonCard(title: String, onClick: () -> Unit) {
     Box(
@@ -267,7 +258,7 @@ private fun LessonCard(title: String, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(Color(0xFFF4F4F4))
-            .clickable(onClick = onClick) // Thêm hành động click
+            .clickable(onClick = onClick)
             .padding(20.dp)
     ) {
         Text(
@@ -279,7 +270,6 @@ private fun LessonCard(title: String, onClick: () -> Unit) {
     }
 }
 
-// SectionHeader giữ nguyên
 @Composable
 private fun SectionHeader(title: String) {
     Row(
@@ -289,12 +279,10 @@ private fun SectionHeader(title: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = title, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        Text(text = "See All", color = Color.Gray, fontSize = 14.sp)
+        Text(text = title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
     }
 }
 
-// Component để hiển thị khi danh sách rỗng
 @Composable
 private fun EmptyStateText(text: String) {
     Text(

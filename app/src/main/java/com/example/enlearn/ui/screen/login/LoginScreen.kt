@@ -73,8 +73,6 @@ fun LoginScreen(
 
         errorMessage?.let { message ->
             scope.launch {
-                // Xử lý lỗi: tránh hiển thị lại lỗi cũ
-                // Bạn có thể thêm một hàm trong ViewModel để "tiêu thụ" lỗi sau khi đã hiển thị
                 snackbarHostState.showSnackbar(message)
             }
         }
@@ -146,7 +144,6 @@ fun LoginScreen(
                 )
                 if (email.isNotEmpty() && password.isNotEmpty()) msg = " " // Xóa thông báo
             }
-//            NotiLoginEr(msg)
             val displayMsg = when {
                 msg.isNotBlank() -> msg
                 !loginSuccessMsg.isNullOrBlank() -> loginSuccessMsg

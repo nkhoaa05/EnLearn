@@ -72,25 +72,25 @@ fun MultipleChoiceScreen(
 
     // Xử lý lưu tiến trình dở dang khi người dùng thoát màn hình
     DisposableEffect(lifecycleOwner) {
-        Log.d("ContinueLearning", "DisposableEffect has been set up.") // Log 1
+        Log.d("ContinueLearning", "DisposableEffect has been set up.")
 
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_PAUSE) {
-                Log.d("ContinueLearning", "ON_PAUSE event detected.") // Log 2
+                Log.d("ContinueLearning", "ON_PAUSE event detected.")
 
                 if (!uiState.isLessonFinished) {
-                    Log.d("ContinueLearning", "Lesson is not finished. Calling saveProgress...") // Log 3
+                    Log.d("ContinueLearning", "Lesson is not finished. Calling saveProgress...")
                     viewModel.saveProgress(status = LessonStatus.IN_PROGRESS,
-                        chapterId = viewModel.chapterId, // <-- Lấy từ ViewModel
-                        lessonId = viewModel.lessonId)    // <-- Lấy từ ViewModel)
+                        chapterId = viewModel.chapterId,
+                        lessonId = viewModel.lessonId)
                 } else {
-                    Log.d("ContinueLearning", "Lesson is already finished. Skipping save.") // Log 4
+                    Log.d("ContinueLearning", "Lesson is already finished. Skipping save.")
                 }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
-            Log.d("ContinueLearning", "DisposableEffect is being disposed.") // Log 5
+            Log.d("ContinueLearning", "DisposableEffect is being disposed.")
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }

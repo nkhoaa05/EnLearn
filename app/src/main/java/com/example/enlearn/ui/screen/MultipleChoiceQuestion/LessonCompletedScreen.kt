@@ -36,11 +36,10 @@ import com.example.enlearn.ui.theme.BlueAction
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LessonCompletedScreen(
-    lessonTitle: String, // Nhận lessonTitle
+    lessonTitle: String,
     onBackToHome: () -> Unit,
     score: Int,
     totalQuestions: Int,
-    // Bạn cũng có thể nhận score và totalQuestions nếu muốn hiển thị
 ) {
     Scaffold(
         topBar = {
@@ -63,11 +62,10 @@ fun LessonCompletedScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Thay thế bằng ảnh vector hoặc icon của bạn
             Icon(
                 painter = painterResource(id = R.drawable.completed_lesson),
                 contentDescription = "Lesson Completed",
-                tint = Color.Unspecified, // Dùng màu gốc của ảnh
+                tint = Color.Unspecified,
                 modifier = Modifier.size(150.dp)
             )
 
@@ -82,7 +80,6 @@ fun LessonCompletedScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                // HIỂN THỊ ĐÚNG TÊN BÀI HỌC
                 text = "You have completed '$lessonTitle' of the English language course",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,

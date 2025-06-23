@@ -1,5 +1,3 @@
-// trong file: ui/screen/MultipleChoiceQuestion/LearningTipScreen.kt
-
 package com.example.enlearn.ui.screen.MultipleChoiceQuestion
 
 import androidx.compose.foundation.Image
@@ -67,7 +65,6 @@ fun LearningTipScreen(
             Spacer(modifier = Modifier.weight(0.5f))
 
             Image(
-                // Bạn cần thêm ảnh này vào thư mục res/drawable
                 painter = painterResource(id = R.drawable.learning_tip_image),
                 contentDescription = "Learning Tip",
                 modifier = Modifier.fillMaxWidth(0.8f)

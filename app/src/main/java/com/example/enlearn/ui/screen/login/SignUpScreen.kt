@@ -25,33 +25,30 @@ fun SignUpScreen(
     onSignUpSuccess: () -> Unit,
     navController: NavController
 ) {
-    // 1. Lấy ViewModel và các State cần thiết
+
     val viewModel: LoginViewModel = viewModel()
     val isLoading by viewModel.isLoading.observeAsState(initial = false)
     val errorMessage by viewModel.error.observeAsState()
-    // Theo dõi trạng thái loginSuccess, vì sau khi đăng ký thành công, ViewModel sẽ coi đó là một lần login
     val isSignUpSuccessful by viewModel.loginSuccess.observeAsState(initial = false)
 
-    // 2. State cho các ô nhập liệu
+
     var firstname by remember { mutableStateOf("") }
     var lastname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    // State để kiểm tra xem người dùng đã nhấn nút "Tạo tài khoản" chưa
+
     var hasAttemptedSignUp by remember { mutableStateOf(false) }
 
-    // 3. State và Scope cho Snackbar để hiển thị thông báo
+
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // 4. Xử lý hiệu ứng phụ (hiển thị thông báo và điều hướng)
     LaunchedEffect(isSignUpSuccessful, errorMessage) {
         if (isSignUpSuccessful) {
             scope.launch {
                 snackbarHostState.showSnackbar("Đăng ký thành công! Đang chuyển đến trang đăng nhập...")
             }
-            // Đợi một chút rồi mới điều hướng
             kotlinx.coroutines.delay(1500)
             onSignUpSuccess()
         }
@@ -64,7 +61,6 @@ fun SignUpScreen(
         }
     }
 
-    // 5. Giao diện với Scaffold
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
@@ -99,8 +95,7 @@ fun SignUpScreen(
                 // Nút Tạo tài khoản
                 AppButton(
                     onClick = {
-                        hasAttemptedSignUp = true // Đánh dấu đã nhấn nút
-                        // Chỉ gọi register khi các trường không rỗng
+                        hasAttemptedSignUp = true
                         if (firstname.isNotBlank() && lastname.isNotBlank() && email.isNotBlank() && password.isNotBlank()) {
                             viewModel.register(firstname, lastname, email, password)
                         }
