@@ -90,10 +90,8 @@ fun AppNavGraph() {
             )
         }
         // Main
-        composable("home") { backStackEntry -> // <-- Phải nhận NavBackStackEntry
+        composable("home") { backStackEntry ->
 
-            // NHẬN TÍN HIỆU:
-            // Lắng nghe giá trị từ SavedStateHandle dưới dạng một State.
             val shouldRefresh by backStackEntry.savedStateHandle.getStateFlow("refresh_home", false).collectAsState()
 
             MainScreen(
@@ -118,6 +116,7 @@ fun AppNavGraph() {
                 onBack = { navController.popBackStack() }
             )
         }
+
         //Navigation MutipleChoiceQuestion
         composable(
             route = "lesson/{chapterId}/{lessonId}",
@@ -166,12 +165,7 @@ fun AppNavGraph() {
                 totalQuestions = totalQuestions,
                 lessonTitle = lessonTitle,
                 onBackToHome = {
-                    // GỬI TÍN HIỆU:
-                    // 1. Lấy ra màn hình 'home' từ back stack.
-                    // 2. Đặt một giá trị (key="refresh_home", value=true) vào SavedStateHandle của nó.
                     navController.getBackStackEntry("home").savedStateHandle.set("refresh_home", true)
-
-                    // SAU ĐÓ MỚI QUAY LẠI
                     navController.popBackStack("home", inclusive = false)
                 }
             )

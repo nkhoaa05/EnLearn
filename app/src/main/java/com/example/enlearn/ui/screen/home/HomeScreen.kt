@@ -72,6 +72,7 @@ sealed class BottomNavScreen(
 }
 
 // 2. COMPOSABLE CHÍNH, SẼ ĐƯỢC GỌI TỪ AppNavGraph
+// Tên hàm này là `MainScreen` vì nó đại diện cho toàn bộ giao diện chính sau khi đăng nhập.
 @Composable
 fun MainScreen(mainNavController: NavHostController,
 ) {
@@ -139,6 +140,11 @@ private fun BottomNavigationBar(navController: NavHostController) {
         }
     }
 }
+
+
+// 4. ĐỔI TÊN HÀM `HomeScreen` CŨ THÀNH `HomeScreenContent`
+// Nó chỉ là nội dung, không phải toàn bộ màn hình.
+// trong file: presentation/home/HomeScreen.kt
 
 @Composable
 private fun HomeScreenContent(
@@ -221,7 +227,7 @@ private fun HomeHeader(userName: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF6A2DEE))
+            .background(Color(0xFF6A2DEE)) // Màu tím
             .padding(horizontal = 24.dp, vertical = 36.dp)
     ) {
         Row(
@@ -251,7 +257,6 @@ private fun HomeHeader(userName: String) {
     }
 }
 
-
 @Composable
 private fun LessonCard(title: String, onClick: () -> Unit) {
     Box(
@@ -260,7 +265,7 @@ private fun LessonCard(title: String, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(Color(0xFFF4F4F4))
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick) // Thêm hành động click
             .padding(20.dp)
     ) {
         Text(

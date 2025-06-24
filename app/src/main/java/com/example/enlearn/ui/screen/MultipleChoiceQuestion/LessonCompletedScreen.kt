@@ -1,6 +1,5 @@
 package com.example.enlearn.ui.screen.MultipleChoiceQuestion
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,28 +8,29 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.enlearn.R
 import com.example.enlearn.ui.theme.BlueAction
-import com.example.enlearn.ui.theme.PurplePrimary
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,6 +40,7 @@ fun LessonCompletedScreen(
     onBackToHome: () -> Unit,
     score: Int,
     totalQuestions: Int,
+    // Bạn cũng có thể nhận score và totalQuestions nếu muốn hiển thị
 ) {
     Scaffold(
         topBar = {
@@ -47,32 +48,38 @@ fun LessonCompletedScreen(
                 title = { },
                 navigationIcon = {
                     IconButton(onClick = onBackToHome) {
-                        Image(painter = painterResource(R.drawable.back_icon),
-                            contentDescription = "Back",
-                            modifier = Modifier.size(30.dp))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                },
-                modifier = Modifier.statusBarsPadding(),
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = PurplePrimary)
+                }
             )
         },
-
         containerColor = Color.White
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(top = 110.dp, bottom = 32.dp, start = 32.dp, end = 32.dp),
+                .padding(32.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
+            // Thay thế bằng ảnh vector hoặc icon của bạn
+            Icon(
                 painter = painterResource(id = R.drawable.completed_lesson),
                 contentDescription = "Lesson Completed",
+                tint = Color.Unspecified, // Dùng màu gốc của ảnh
+                modifier = Modifier.size(150.dp)
             )
 
             Spacer(modifier = Modifier.height(32.dp))
+
+            Text(
+                text = "Lesson Completed",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 // HIỂN THỊ ĐÚNG TÊN BÀI HỌC

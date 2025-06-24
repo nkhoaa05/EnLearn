@@ -97,7 +97,7 @@ fun LessonScreen(
     }
 }
 
-// Component cho tiêu đề Chapter
+
 @Composable
 private fun ChapterHeader(title: String) {
     Text(
@@ -110,7 +110,6 @@ private fun ChapterHeader(title: String) {
     )
 }
 
-// Component cho mỗi Lesson Item
 @Composable
 private fun LessonItem(
     lesson: Lesson,

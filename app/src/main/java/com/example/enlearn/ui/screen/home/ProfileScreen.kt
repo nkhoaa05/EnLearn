@@ -85,11 +85,13 @@ fun ProfileScreen() {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-
+        // Name Field
+//        ProfileTextField(label = "Name", value = "Do Long")
         InputField("Name", user.fullName, {}, "", false)
         Spacer(modifier = Modifier.height(16.dp))
 
-
+        // Email Field
+//        ProfileTextField(label = "Email", value = "dogialong@gmail.com")
         InputField("Email", user.email, {}, "", false)
         Spacer(modifier = Modifier.height(32.dp))
 
