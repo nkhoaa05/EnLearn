@@ -105,12 +105,10 @@ class LoginViewModel : ViewModel() {
         googleAuthRepository.handleSignInResult(
             data,
             onSuccess = { firebaseUser -> // firebaseUser ở đây là FirebaseUser?
-                // SỬA Ở ĐÂY: Thêm kiểm tra null
+
                 if (firebaseUser != null) {
-                    // Nếu không null, gọi hàm checkAndSave
                     checkAndSaveGoogleUser(firebaseUser)
                 } else {
-                    // Nếu null, xử lý lỗi
                     handleLoginFailure("Google Sign-In failed: User is null.")
                 }
             },
@@ -144,7 +142,7 @@ class LoginViewModel : ViewModel() {
                         _loginSuccess.postValue(true)
                     }
                 } else {
-                    // Trường hợp này ít xảy ra nếu saveUser logic đúng
+
                     handleLoginFailure("User not found in Firestore.")
                 }
                 _isLoading.postValue(false)
@@ -156,7 +154,7 @@ class LoginViewModel : ViewModel() {
 
     private fun saveUserToFirestore(user: User, isNewUser: Boolean) {
         firestore.collection("users").document(user.id)
-            // SỬA Ở ĐÂY: Dùng SetOptions.merge()
+
             .set(user, SetOptions.merge())
             .addOnSuccessListener {
                 Log.d(TAG, "User data saved to Firestore successfully.")

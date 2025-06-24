@@ -38,9 +38,8 @@ fun LessonScreen(
 
 ) {
     val chapters by chapterViewModel.chapters
-    val primaryColor = Color(0xFF6A2DEE) // Màu tím từ header của bạn
+    val primaryColor = Color(0xFF6A2DEE)
 
-    // Sử dụng Box để tạo hiệu ứng lớp chồng
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -74,21 +73,20 @@ fun LessonScreen(
                         .fillMaxSize()
                         .background(Color.White),
                     contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp) // Khoảng cách giữa các item
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     chapters.forEach { chapter ->
-                        // Item cho tiêu đề Chapter
                         item {
                             ChapterHeader(title = chapter.title)
                         }
-                        // Các item cho Lesson trong Chapter đó
+
                         items(chapter.lessons) { lesson ->
                             LessonItem(
                                 lesson = lesson,
                                 onClick = { onLessonClicked(chapter.id, lesson.id) }
                             )
                         }
-                        // Thêm khoảng trống sau mỗi chapter
+
                         item {
                             Spacer(modifier = Modifier.height(16.dp))
                         }
@@ -122,8 +120,8 @@ private fun LessonItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp), // Bo tròn các góc
-        color = Color(0xFFF4F4F4) // Màu xám nhạt như trong thiết kế
+        shape = RoundedCornerShape(16.dp),
+        color = Color(0xFFF4F4F4)
     ) {
         Text(
             text = lesson.title,

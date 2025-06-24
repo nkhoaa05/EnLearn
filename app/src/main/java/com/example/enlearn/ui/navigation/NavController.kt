@@ -135,7 +135,6 @@ fun AppNavGraph() {
 
             MultipleChoiceScreen(
                 viewModel = viewModel,
-                // SỬA Ở ĐÂY: Đặt tên rõ ràng cho các tham số
                 onNavigateToCompleted = { score, totalQuestions, lessonTitle ->
                     val encodedTitle = java.net.URLEncoder.encode(lessonTitle, "UTF-8")
                     navController.navigate("completed/$score/$totalQuestions/$encodedTitle") {

@@ -28,10 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.enlearn.R
 import com.example.enlearn.data.model.User
-import com.example.enlearn.presentation.home.MainScreen
 import com.example.enlearn.ui.components.InputField
-import com.example.enlearn.ui.components.MainScaffoldWithBottomNav
-import com.example.enlearn.ui.screen.home.LessonScreen
 import com.example.enlearn.ui.viewModel.LoginViewModel
 
 
@@ -88,13 +85,11 @@ fun ProfileScreen() {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Name Field
-//        ProfileTextField(label = "Name", value = "Do Long")
+
         InputField("Name", user.fullName, {}, "", false)
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Email Field
-//        ProfileTextField(label = "Email", value = "dogialong@gmail.com")
+
         InputField("Email", user.email, {}, "", false)
         Spacer(modifier = Modifier.height(32.dp))
 

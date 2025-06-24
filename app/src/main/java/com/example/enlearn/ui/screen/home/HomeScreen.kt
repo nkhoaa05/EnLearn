@@ -72,7 +72,6 @@ sealed class BottomNavScreen(
 }
 
 // 2. COMPOSABLE CHÍNH, SẼ ĐƯỢC GỌI TỪ AppNavGraph
-// Tên hàm này là `MainScreen` vì nó đại diện cho toàn bộ giao diện chính sau khi đăng nhập.
 @Composable
 fun MainScreen(mainNavController: NavHostController,
 ) {
@@ -141,11 +140,6 @@ private fun BottomNavigationBar(navController: NavHostController) {
     }
 }
 
-
-// 4. ĐỔI TÊN HÀM `HomeScreen` CŨ THÀNH `HomeScreenContent`
-// Nó chỉ là nội dung, không phải toàn bộ màn hình.
-// trong file: presentation/home/HomeScreen.kt
-
 @Composable
 private fun HomeScreenContent(
     onLessonClicked: (chapterId: String, lessonId: String) -> Unit,
@@ -158,7 +152,6 @@ private fun HomeScreenContent(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                // SỬA LỖI 1: Gọi đúng tên hàm public
                 homeViewModel.refreshData()
             }
         }
@@ -184,7 +177,7 @@ private fun HomeScreenContent(
             // Lặp qua danh sách item duy nhất
             items(
                 items = uiState.homeListItems,
-                // SỬA LỖI 2 & 3: Cung cấp key duy nhất cho TẤT CẢ các loại item
+
                 key = { item ->
                     when (item) {
                         is HomeListItem.ContinueLearningHeader -> "header_continuing"
@@ -195,7 +188,7 @@ private fun HomeScreenContent(
                 },
                 contentType = { item -> item::class.java.simpleName }
             ) { item ->
-                // SỬA LỖI 2 & 3: Dùng when để vẽ Composable tương ứng cho TẤT CẢ các loại item
+
                 when (item) {
                     is HomeListItem.ContinueLearningHeader -> {
                         Spacer(modifier = Modifier.height(24.dp))
@@ -228,7 +221,7 @@ private fun HomeHeader(userName: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF6A2DEE)) // Màu tím
+            .background(Color(0xFF6A2DEE))
             .padding(horizontal = 24.dp, vertical = 36.dp)
     ) {
         Row(
@@ -258,7 +251,7 @@ private fun HomeHeader(userName: String) {
     }
 }
 
-// Sửa lại LessonCard để nhận onClick
+
 @Composable
 private fun LessonCard(title: String, onClick: () -> Unit) {
     Box(
@@ -267,7 +260,7 @@ private fun LessonCard(title: String, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(Color(0xFFF4F4F4))
-            .clickable(onClick = onClick) // Thêm hành động click
+            .clickable(onClick = onClick)
             .padding(20.dp)
     ) {
         Text(

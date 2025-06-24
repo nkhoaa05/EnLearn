@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,19 +19,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -46,11 +45,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.example.enlearn.R
 import com.example.enlearn.data.model.LessonStatus
 import com.example.enlearn.ui.theme.BlueAction
 import com.example.enlearn.ui.theme.BlueSelection
@@ -72,25 +73,25 @@ fun MultipleChoiceScreen(
 
     // Xử lý lưu tiến trình dở dang khi người dùng thoát màn hình
     DisposableEffect(lifecycleOwner) {
-        Log.d("ContinueLearning", "DisposableEffect has been set up.") // Log 1
+        Log.d("ContinueLearning", "DisposableEffect has been set up.")
 
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_PAUSE) {
-                Log.d("ContinueLearning", "ON_PAUSE event detected.") // Log 2
+                Log.d("ContinueLearning", "ON_PAUSE event detected.")
 
                 if (!uiState.isLessonFinished) {
-                    Log.d("ContinueLearning", "Lesson is not finished. Calling saveProgress...") // Log 3
+                    Log.d("ContinueLearning", "Lesson is not finished. Calling saveProgress...")
                     viewModel.saveProgress(status = LessonStatus.IN_PROGRESS,
-                        chapterId = viewModel.chapterId, // <-- Lấy từ ViewModel
-                        lessonId = viewModel.lessonId)    // <-- Lấy từ ViewModel)
+                        chapterId = viewModel.chapterId,
+                        lessonId = viewModel.lessonId)
                 } else {
-                    Log.d("ContinueLearning", "Lesson is already finished. Skipping save.") // Log 4
+                    Log.d("ContinueLearning", "Lesson is already finished. Skipping save.")
                 }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
-            Log.d("ContinueLearning", "DisposableEffect is being disposed.") // Log 5
+            Log.d("ContinueLearning", "DisposableEffect is being disposed.")
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
@@ -118,9 +119,12 @@ fun MultipleChoiceScreen(
                     },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                            Image(painter = painterResource(R.drawable.back_icon),
+                                contentDescription = "Back",
+                                modifier = Modifier.size(30.dp))
                         }
                     },
+                    modifier = Modifier.statusBarsPadding(),
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = PurplePrimary)
                 )
             },
@@ -164,7 +168,7 @@ private fun QuizContent(
         Spacer(modifier = Modifier.height(8.dp))
         Text(question.question, fontSize = 20.sp)
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(100.dp))
 
         LazyColumn(
             modifier = Modifier.weight(1f),
@@ -181,6 +185,7 @@ private fun QuizContent(
                     isCorrectOption = isCorrectOption,
                     onClick = { onOptionSelected(index) }
                 )
+                Spacer(modifier = Modifier.height(40.dp))
             }
         }
 
@@ -208,9 +213,9 @@ private fun ResultPanel(
 ) {
     AnimatedVisibility(
         visible = isVisible,
-        modifier = modifier,
+        modifier = modifier.clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp, topEnd = 16.dp, bottomEnd = 16.dp)),
         enter = slideInVertically(initialOffsetY = { it }),
-        exit = slideOutVertically(targetOffsetY = { it })
+        exit = slideOutVertically(targetOffsetY = { it }),
     ) {
         val backgroundColor: Color
         val title: String
@@ -238,7 +243,9 @@ private fun ResultPanel(
             }
         }
 
-        Box(modifier = Modifier.fillMaxWidth().background(backgroundColor)) {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .background(backgroundColor)) {
             Column(
                 modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 32.dp),
                 horizontalAlignment = Alignment.Start

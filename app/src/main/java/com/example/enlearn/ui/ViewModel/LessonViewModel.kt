@@ -50,8 +50,6 @@ class ChapterViewModel : ViewModel() {
                         Log.d("ChapterViewModel", "➡️ Đã fetch ${lessonDocuments.size} lessons cho chapter [$chapterId]")
 
                         val lessonList = lessonDocuments.mapNotNull { lessonDoc ->
-                            // Code parse lesson của bạn đã rất tốt, chúng ta chỉ cần đặt nó vào đây
-                            // Ở đây, chúng ta chỉ lấy title, không cần lấy câu hỏi để tối ưu
                             val lessonId = lessonDoc.id
                             val lessonTitle = lessonDoc.getString("title") ?: return@mapNotNull null
                             Lesson(id = lessonId, title = lessonTitle, questions = emptyList())
